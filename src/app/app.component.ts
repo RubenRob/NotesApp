@@ -34,6 +34,7 @@ export class AppComponent
   constructor(apiService: APIService)
   {
     this.apiServiceApp = apiService;
+    this.GetUsers();
   }  
   
   GetUsers()
@@ -52,7 +53,6 @@ export class AppComponent
   }
   GetNotitiesVanGebruiker()
   {
-    alert(this.naamNotitieTonen);
     this.apiServiceApp.getNotitiesVanGebruiker(this.naamNotitieTonen).subscribe((data: Notitie[]) => {
       console.log(data);
      this.notities = data;
@@ -63,6 +63,7 @@ export class AppComponent
     this.apiServiceApp.createUser(this.naamToevoegen).subscribe((data) => {
       console.log(data);
     });
+    this.GetUsers();
   }
   CreateNotitie()
   {

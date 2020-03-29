@@ -1,40 +1,36 @@
-<div>   
-  <label>Gebruiker toevoegen</label>
-  <input type="string" [(ngModel)]="naamToevoegen"/>
-  <button (click)="CreateUser()">Toevoegen gebruiker</button>
-  <hr/>
-  <label>Gebruiker verwijderen</label>
-  <input type="string" [(ngModel)]="naamVerwijderen"/>
-  <button (click)="DeleteUser()">Verwijderen gebruiker</button>
-  <hr/>
-  <label>Notitie toevoegen</label>
-  <input type="string" [(ngModel)]="notitieToevoegen"/> 
-  voor gebruiker <input type="string" [(ngModel)]="naamNotitieToevoegen"/>
-  <button (click)="CreateNotitie()">Toevoegennotitie</button>
-  <hr/>
-  <button (click)="GetUsers()">geef een lijst van alle gebruikers</button>
-  <hr/>
+<div>
+  <p>Lijst gebruikers:</p>
   <ul>
-    <li *ngFor="let gebruiker of gebruikers">
-      {{gebruiker.id}}   {{gebruiker.name}}
-    </li>
+  <li *ngFor="let gebruiker of gebruikers">
+    <!--{{gebruiker.id}} -->  {{gebruiker.name}}
+  </li>
   </ul>
-  <hr/>
-  <!--<button (click)="GetNotities()">geef een lijst van alle notities</button>
-  <hr/>
-  <ul>
-    <li *ngFor="let notitie of notities">
-      {{notitie.id}}  {{notitie.content}}
-    </li>
-  </ul>
-  <hr/>-->
-  <label>Notitie toevoegen voor gebruiker: </label>
-  <input type="string" [(ngModel)]="naamNotitieTonen"/> 
-  <button (click)="GetNotitiesVanGebruiker()">geef een lijst van alle notities van gebruiker {{naamNotitieTonen}}</button>
-  <hr/>
-  <ul>
-    <li *ngFor="let notitie of notities">
-      {{notitie.id}}  {{notitie.content}}
-    </li>
-  </ul>
-  </div>
+  <button (click)="GetUsers()">Lijst gebruikers vernieuwen</button>
+</div>
+<hr/>
+<div>
+<p>Gebruiker toevoegen</p>
+Naam: <input type="string" [(ngModel)]="naamToevoegen"/>
+<p><button (click)="CreateUser()">Toevoegen</button></p>
+<hr/>
+<p>Gebruiker verwijderen</p>
+Naam: <input type="string" [(ngModel)]="naamVerwijderen"/>
+<p><button (click)="DeleteUser()">Verwijderen</button></p>
+</div>
+<hr/>
+<p>Notitie toevoegen voor gebruiker</p>
+Naam: <input type="string" [(ngModel)]="naamNotitieToevoegen"/>
+<br>
+<br>
+Notitie: <input type="string" [(ngModel)]="notitieToevoegen"/> 
+<p><button (click)="CreateNotitie()">Toevoegen</button></p>
+<hr/>
+<p>Notites van gebruiker weergeven</p>
+Naam: <input type="string" [(ngModel)]="naamNotitieTonen"/>
+<p><button (click)="GetNotitiesVanGebruiker()">Weergeven</button></p>
+<hr/>
+<ul>
+  <li *ngFor="let notitie of notities">
+    <!--{{notitie.id}} -->  {{notitie.content}}
+  </li>
+</ul>

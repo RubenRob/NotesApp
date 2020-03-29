@@ -15,9 +15,9 @@ export class APIService {
   getUsers = () => {
     return this.http.get(this.route + "/users");
   }
-  getNotities = () => {
+  /*getNotities = () => {
     return this.http.get(this.route + "/notesAll");
-  }
+  }*/
   getNotitiesVanGebruiker(naam) {
     return this.http.get(this.route + "/notes?name=" + naam);
   }
