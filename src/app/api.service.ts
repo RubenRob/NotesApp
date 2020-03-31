@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 export class APIService {
 
   route;
+  fout;
   
   constructor(private http: HttpClient) { 
     this.route = 'https://jensjorisdecorte-backend-example-4.glitch.me'
@@ -15,19 +16,19 @@ export class APIService {
   getUsers = () => {
     return this.http.get(this.route + "/users");
   }
-  /*getNotities = () => {
+  getNotes = () => {
     return this.http.get(this.route + "/notesAll");
-  }*/
-  getNotitiesVanGebruiker(naam) {
-    return this.http.get(this.route + "/notes?name=" + naam);
   }
-  createUser(naam){
-    return this.http.get(this.route + "/add?name=" + naam);
+  getUserNotes = (name: string) => {
+    return this.http.get(this.route + "/notes?name=" + name);
   }
-  createNotitie(naam, notitie){
-    return this.http.get(this.route + "/addnote?name="+ naam + "&content=" + notitie);
+  addUser = (name: string) => {
+    return this.http.post(this.route + "/users", {name: name});
   }
-  deleteUser(naam){
-    return this.http.get(this.route + "/remove?name=" + naam);
+  addUserNote = (name: string, note: string) => {
+    return this.http.get(this.route + "/addnote?name="+ name + "&content=" + note);
+  }
+  deleteUser = (name: string) => {
+    return this.http.get(this.route + "/remove?name=" + name);
   }
 }

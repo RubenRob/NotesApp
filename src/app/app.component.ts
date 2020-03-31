@@ -23,58 +23,62 @@ export class AppComponent
   title = 'NotesApp';
   private apiServiceApp;
   route;
-  gebruikers : Gebruiker[] = [];
+  fout;
+  gebruikers: Gebruiker[] = [];
   naamToevoegen;
   naamVerwijderen;
   naamNotitieToevoegen;
   naamNotitieTonen;
-  notities : Notitie[] = [];
+  notities: Notitie[] = [];
+  notitiesGebruiker: Notitie[] = [];
   notitieToevoegen;
 
   constructor(apiService: APIService)
   {
     this.apiServiceApp = apiService;
-    this.GetUsers();
+    this.lijstGebruikers();
   }  
   
-  GetUsers()
-  {
+  lijstGebruikers = () => {
     this.apiServiceApp.getUsers().subscribe((data: Gebruiker[]) => {
-         console.log(data);
-        this.gebruikers = data;
+      console.log(data);   
+      this.gebruikers = data;
       })
   }
-  GetNotities()
-  {
-    this.apiServiceApp.getNotities().subscribe((data: Notitie[]) => {
+  lijstNotities = () => {
+    this.apiServiceApp.getNotes().subscribe((data: Notitie[]) => {
          console.log(data);
         this.notities = data;
       })
   }
-  GetNotitiesVanGebruiker()
-  {
-    this.apiServiceApp.getNotitiesVanGebruiker(this.naamNotitieTonen).subscribe((data: Notitie[]) => {
+  lijstNotitiesVanGebruiker = () => {
+    this.apiServiceApp.getUserNotes(this.naamNotitieTonen).subscribe((data: Notitie[]) => {
       console.log(data);
-     this.notities = data;
+     this.notitiesGebruiker = data;
     });
+    this.naamNotitieTonen = "";
   }
-  CreateUser()
-  {
-    this.apiServiceApp.createUser(this.naamToevoegen).subscribe((data) => {
-      console.log(data);
-    });
-    this.GetUsers();
-  }
-  CreateNotitie()
-  {
-    this.apiServiceApp.createNotitie(this.naamNotitieToevoegen, this.notitieToevoegen).subscribe((data) => {
+  toevoegenGebruiker = () => {
+    this.apiServiceApp.addUser(this.naamToevoegen).subscribe((data) => {
       console.log(data);
     });
+    this.lijstGebruikers();
+    this.naamToevoegen = "";
   }
-  DeleteUser()
-  {
+  
+  toevoegenNotitieVoorGebruiker = () => {
+    this.apiServiceApp.addUserNote(this.naamNotitieToevoegen, this.notitieToevoegen).subscribe((data) => {
+      console.log(data);
+    });
+    this.naamNotitieToevoegen = "";
+    this.notitieToevoegen = "";
+  }
+  
+  verwijderenGebruiker = () => {
     this.apiServiceApp.deleteUser(this.naamVerwijderen).subscribe((data) => {
         console.log(data);
     });
+    this.lijstGebruikers();
+    this.naamVerwijderen = "";
   }
 }
