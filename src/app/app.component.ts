@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormBuilder } from '@angular/forms';
 import { APIService } from './api.service';
 
 interface Gebruiker
@@ -23,7 +23,8 @@ export class AppComponent
   title = 'NotesApp';
   private apiServiceApp;
   route;
-  fout;
+  messageGebruikerToevoegen;
+  messageGebruikerVerwijderen;
   gebruikers: Gebruiker[] = [];
   naamToevoegen;
   naamVerwijderen;
@@ -61,6 +62,10 @@ export class AppComponent
   toevoegenGebruiker = () => {
     this.apiServiceApp.addUser(this.naamToevoegen).subscribe((data) => {
       console.log(data);
+      if(data.error == null)
+        this.messageGebruikerToevoegen = data.success;
+      else
+        this.messageGebruikerToevoegen = data.error;
     });
     this.lijstGebruikers();
     this.naamToevoegen = "";
@@ -77,6 +82,10 @@ export class AppComponent
   verwijderenGebruiker = () => {
     this.apiServiceApp.deleteUser(this.naamVerwijderen).subscribe((data) => {
         console.log(data);
+        if(data.error == null)
+          this.messageGebruikerVerwijderen = data.success;
+        else
+          this.messageGebruikerVerwijderen = data.error;
     });
     this.lijstGebruikers();
     this.naamVerwijderen = "";

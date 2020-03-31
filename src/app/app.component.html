@@ -12,11 +12,12 @@
   <p>Gebruiker toevoegen</p>
   Naam: <input type="string" [(ngModel)]="naamToevoegen"/>
   <p><button (click)="toevoegenGebruiker()">Toevoegen</button></p>
-  {{fout}}
+  {{messageGebruikerToevoegen}}
   <hr/>
 <p>Gebruiker verwijderen</p>
 Naam: <input type="string" [(ngModel)]="naamVerwijderen"/>
 <p><button (click)="verwijderenGebruiker()">Verwijderen</button></p>
+{{messageGebruikerVerwijderen}}
 </div>
 <hr/>
 <p>Notitie toevoegen voor gebruiker</p>

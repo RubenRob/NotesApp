@@ -1,5 +1,6 @@
 import { Injectable, Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class APIService {
     return this.http.get(this.route + "/notes?name=" + name);
   }
   addUser = (name: string) => {
-    return this.http.post(this.route + "/users", {name: name});
+    return this.http.post(this.route + "/users", {name: name});;
   }
   addUserNote = (name: string, note: string) => {
     return this.http.get(this.route + "/addnote?name="+ name + "&content=" + note);
