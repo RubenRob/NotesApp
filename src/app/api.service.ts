@@ -1,5 +1,6 @@
 import { Injectable, Component } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -13,7 +14,6 @@ export class APIService {
   constructor(private http: HttpClient) { 
     this.route = 'https://jensjorisdecorte-backend-example-4.glitch.me'
   }
-
   getUsers = () => {
     return this.http.get(this.route + "/users");
   }
@@ -24,12 +24,12 @@ export class APIService {
     return this.http.get(this.route + "/notes?name=" + name);
   }
   addUser = (name: string) => {
-    return this.http.post(this.route + "/users", {name: name});;
+    return this.http.post(this.route + "/users", {name: name});
   }
   addUserNote = (name: string, note: string) => {
-    return this.http.get(this.route + "/addnote?name="+ name + "&content=" + note);
+    return this.http.post(this.route + "/addnote", {name: name, content: note});
   }
   deleteUser = (name: string) => {
-    return this.http.get(this.route + "/remove?name=" + name);
+    return this.http.delete(this.route + "/users?name=" + name);
   }
 }

@@ -8,12 +8,12 @@
 </div>
 <button (click)="lijstGebruikers()">Lijst gebruikers vernieuwen</button>
 <hr/>
-<div>  
-  <p>Gebruiker toevoegen</p>
-  Naam: <input type="string" [(ngModel)]="naamToevoegen"/>
-  <p><button (click)="toevoegenGebruiker()">Toevoegen</button></p>
-  {{messageGebruikerToevoegen}}
-  <hr/>
+  <div>  
+    <p>Gebruiker toevoegen</p>
+    Naam: <input type="string" [(ngModel)]="naamToevoegen"/>
+    <p><button (click)="toevoegenGebruiker()">Toevoegen</button></p>
+    {{messageGebruikerToevoegen}}
+    <hr/>
 <p>Gebruiker verwijderen</p>
 Naam: <input type="string" [(ngModel)]="naamVerwijderen"/>
 <p><button (click)="verwijderenGebruiker()">Verwijderen</button></p>
