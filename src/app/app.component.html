@@ -5,28 +5,32 @@
     {{gebruiker.name}}
   </li>
   </ul>
-</div>
 <button (click)="lijstGebruikers()">Lijst gebruikers vernieuwen</button>
 <hr/>
-  <div>  
-    <p>Gebruiker toevoegen</p>
-    Naam: <input type="string" [(ngModel)]="naamToevoegen"/>
-    <p><button (click)="toevoegenGebruiker()">Toevoegen</button></p>
-    {{messageGebruikerToevoegen}}
-    <hr/>
-<p>Gebruiker verwijderen</p>
-Naam: <input type="string" [(ngModel)]="naamVerwijderen"/>
-<p><button (click)="verwijderenGebruiker()">Verwijderen</button></p>
-{{messageGebruikerVerwijderen}}
 </div>
-<hr/>
-<p>Notitie toevoegen voor gebruiker</p>
-Naam: <input type="string" [(ngModel)]="naamNotitieToevoegen"/>
-<br>
-<br>
-Notitie: <input type="string" [(ngModel)]="notitieToevoegen"/> 
-<p><button (click)="toevoegenNotitieVoorGebruiker()">Toevoegen</button></p>
-<hr/>
+
+<div>  
+  <p>Gebruiker toevoegen</p>
+  Naam: <input type="string" [(ngModel)]="naamToevoegen"/>
+  <p><button (click)="toevoegenGebruiker()">Toevoegen</button></p>
+  {{messageGebruikerToevoegen}}
+  <hr/>
+  <p>Gebruiker verwijderen</p>
+  Naam: <input type="string" [(ngModel)]="naamVerwijderen"/>
+  <p><button (click)="verwijderenGebruiker()">Verwijderen</button></p>
+  {{messageGebruikerVerwijderen}}
+  <hr/>
+</div>
+
+<div>
+  <p>Notitie toevoegen voor gebruiker</p>
+  Naam: <input type="string" [(ngModel)]="naamNotitieToevoegen"/>
+  <br>
+  <br>
+  Notitie: <input type="string" [(ngModel)]="notitieToevoegen"/> 
+  <p><button (click)="toevoegenNotitieVoorGebruiker()">Toevoegen</button></p>
+  <hr/>
+</div>
 
 <p>Alle notities weergeven</p>
 <p><button (click)="lijstNotities()">Lijst notities vernieuwen</button></p>
@@ -45,4 +49,11 @@ Naam: <input type="string" [(ngModel)]="naamNotitieTonen"/>
     {{notitieGebruiker.content}}
   </li>
 </ul>
+<hr/>
+<hr/>
+<hr/>
+<hr/>
+<hr/>
+<hr/>
+<hr/>
 <hr/>

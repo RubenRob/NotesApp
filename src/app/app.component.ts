@@ -29,9 +29,10 @@ export class AppComponent
   naamToevoegen;
   naamVerwijderen;
   naamNotitieToevoegen;
-  naamNotitieTonen;
+  naamNotitieTonen ="Bart";
   notities: Notitie[] = [];
   notitiesGebruiker: Notitie[] = [];
+  notitiesGebruikerMetQueryOpNotes: Notitie[] = [];
   notitieToevoegen;
 
   constructor(apiService: APIService)
@@ -39,30 +40,15 @@ export class AppComponent
     this.apiServiceApp = apiService;
     this.lijstGebruikers();
   }  
-  
-  //lijst met gebruikers weergeven
+  //bewerkingen op "/users"
+  //haal de lijst van alle gebruikers op
   lijstGebruikers = () => {
     this.apiServiceApp.getUsers().subscribe((data: Gebruiker[]) => {
       console.log(data);   
       this.gebruikers = data;
       })
   }
-  //lijst met alle notities van weergeven
-  lijstNotities = () => {
-    this.apiServiceApp.getNotes().subscribe((data: Notitie[]) => {
-         console.log(data);
-        this.notities = data;
-      })
-  }
-  //lijst met notities van een gebruiker weergeven
-  lijstNotitiesVanGebruiker = () => {
-    this.apiServiceApp.getUserNotes(this.naamNotitieTonen).subscribe((data: Notitie[]) => {
-      console.log(data);
-     this.notitiesGebruiker = data;
-    });
-    this.naamNotitieTonen = "";
-  }
-  //een gebruiker toevoegen
+  //voeg een gebruiker toe
   toevoegenGebruiker = () => {
     this.apiServiceApp.addUser(this.naamToevoegen).subscribe((data) => {
       console.log(data);
@@ -74,15 +60,7 @@ export class AppComponent
     this.lijstGebruikers();
     this.naamToevoegen = "";
   }
-  //een notitie voor een bepaalde gebruiker toevoegen
-  toevoegenNotitieVoorGebruiker = () => {
-    this.apiServiceApp.addUserNote(this.naamNotitieToevoegen, this.notitieToevoegen).subscribe((data) => {
-      console.log(data);
-    });
-    this.naamNotitieToevoegen = "";
-    this.notitieToevoegen = "";
-  }
-  //een gebruiker verwijderen
+  //verwijder een gebruiker
   verwijderenGebruiker = () => {
     this.apiServiceApp.deleteUser(this.naamVerwijderen).subscribe((data) => {
         console.log(data);
@@ -93,5 +71,38 @@ export class AppComponent
     });
     this.lijstGebruikers();
     this.naamVerwijderen = "";
+  }
+
+  //bewerkingen op "/Notes"
+  //haal de lijst van alle notities op
+  lijstNotities = () => {
+    this.apiServiceApp.getNotes().subscribe((data: Notitie[]) => {
+         console.log(data);
+        this.notities = data;
+      })
+  }
+  //haal de lijst van alle notities op voor een bepaalde gebruiker
+  //lijstNotitiesVanGebruikerMetQueryOpNotes = () => {
+    //this.apiServiceApp.getNotesFromUser(this.naamNotitieTonen).subscribe((data: Notitie[]) => {
+      //console.log(data);
+     //this.notitiesGebruikerMetQueryOpNotes = data;
+    //});
+    //this.naamNotitieTonen = "";
+  //}
+  //haal de lijst van alle notities op voor een bepaalde gebruiker
+  lijstNotitiesVanGebruiker = () => {
+    this.apiServiceApp.getNotesFromUser(this.naamNotitieTonen).subscribe((data: Notitie[]) => {
+      console.log(data);
+     this.notitiesGebruiker = data;
+    });
+    this.naamNotitieTonen = "";
+  }
+  //voeg een notitie toe een bepaalde gebruiker
+  toevoegenNotitieVoorGebruiker = () => {
+    this.apiServiceApp.addNoteForUser(this.naamNotitieToevoegen, this.notitieToevoegen).subscribe((data) => {
+      console.log(data);
+    });
+    this.naamNotitieToevoegen = "";
+    this.notitieToevoegen = "";
   }
 }
