@@ -1,0 +1,26 @@
+<h1>Welkom {{activeUser}}</h1>
+<form [formGroup]="formCategory" (ngSubmit)="submitCategory()">
+  <div *ngFor="let category of categories">
+    <input type="checkbox" (change)="onChangeCategory(category.description, $event.target.checked)" />
+    {{ category.description }}
+  </div>
+  <button>Filter toepassen</button><!--disable wanneer er geen opties geselecteerd zijn-->
+</form>
+<form [formGroup]="formNote" (ngSubmit)="submitNote()">
+  <div *ngFor="let note of notes">
+    <!-- <input type="checkbox" (change)="onChangeNote(note.content, $event.target.checked)" /> -->
+    <a href="/login">{{ note.content }}</a>
+  </div>
+  <button>submit</button>
+</form>
+
+<div *ngFor="let note of notesNaFilter">
+  {{ note }}
+</div>
+<form [formGroup]="formNote" (ngSubmit)="submitNote()">
+  <div *ngFor="let note of notes">
+    <!-- <input type="checkbox" (change)="onChangeNote(note.content, $event.target.checked)" /> -->
+    <a href="/login">{{ note.content }}</a>
+  </div>
+  <button>submit</button>
+</form>
