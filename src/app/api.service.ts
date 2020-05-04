@@ -38,15 +38,15 @@ export class APIService {
   //bewerkingen op "/notescategory"
   //
 
-  //haal de lijst van alle notities op
+  //haal de lijst van alle categorien op
   getCategories = () => {
     return this.http.get(this.route + "/category");
   }
-  //haal de lijst van alle notities van een gebruiker op
+  //haal de lijst van alle categorien van een gebruiker op
   getCategoriesFromUser = (userName: string) => {
     return this.http.get(this.route + "/users/"+userName+"/category");
   }
-  //voeg een notitie toe een bepaalde gebruiker
+  //voeg een categorie toe voor een bepaalde gebruiker
   addCategory = ( userName: string, description : string) => {
     return this.http.post(this.route + "/users/"+userName+"/category", {description: description});
   }
@@ -70,18 +70,5 @@ export class APIService {
   //haal de lijst van alle notities op voor een bepaalde gebruiker
   getNotesWithSubstringFromUser = (userName: string, searchContent: string, category: string) => {
     return this.http.get(this.route + "/users/"+userName+"/notes?searchContent=" + searchContent + "&category=" + category);
-  }
-
-  //
-  //te verwijderen routines eens de boel werkt
-  //
- 
-  //haal de lijst van alle notities op
-  getNotes = () => {
-    return this.http.get(this.route + "/notesAll");
-  }
-  //haal de lijst van alle notities op voor een bepaalde gebruiker
-  getNotesFromUserWithQueryToNotes = (userName: string) => {
-    return this.http.get(this.route + "/notesUser?userName="+userName);
   }
 }

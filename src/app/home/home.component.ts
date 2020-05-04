@@ -89,15 +89,9 @@ export class HomeComponent implements OnInit {
   submitCategory() {
     this.notesNaFilter=[];
     this.filters = this.formCategory.value.description;
-    this.filters.forEach((filter) => {
-      alert("ophalen filter");
-      this.OphalenNotitie(filter);
-      alert("notities zijn opgehaald");
-      this.notesFilter.forEach((note) => {
-        alert("notesFilter aan 't doorlopen");
-        this.notesNaFilter.push(note.content);
-        alert("notesNaFilter gevuld");
-      });
+      this.OphalenNotitie(this.filters);
+    this.notesFilter.forEach((note) => {
+      this.notesNaFilter.push(note.content);
     });
     console.log(this.formCategory.value.description);
   }
@@ -118,12 +112,9 @@ export class HomeComponent implements OnInit {
         })
     }
     OphalenNotitie(filter) {      
-      alert("OphalenNotitie");
       this.apiService.getNotesFromUser(this.activeUser,"",filter).subscribe((data: Note[]) => {  
-        alert("apiService bezocht");
-        console.log(data);   
+        //console.log(data);   
         this.notesFilter = data;  
-        alert("notesFilter gevuld");
         })
       }
   }
