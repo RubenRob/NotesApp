@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 
 import { APIService } from '../api.service';
+import { Content } from '@angular/compiler/src/render3/r3_ast';
 
 interface User {
   id: Number;
@@ -43,7 +44,9 @@ export class HomeComponent implements OnInit {
     
     formCategory: FormGroup;
     filters=[];
-    formNote: FormGroup;
+    formNote= new FormGroup({
+      categoryRadio: new FormControl()
+    });
 
   constructor(ApiService: APIService, private formBuilder: FormBuilder) {
     this.apiService = ApiService;
@@ -89,11 +92,13 @@ export class HomeComponent implements OnInit {
   submitCategory() {
     this.notesNaFilter=[];
     this.filters = this.formCategory.value.description;
-      this.OphalenNotitie(this.filters);
-    this.notesFilter.forEach((note) => {
-      this.notesNaFilter.push(note.content);
+    this.filters.forEach((filter) => {
+      this.OphalenNotitie(filter);
+      this.notesFilter.forEach((note) => {
+        this.notesNaFilter.push(note.content);
+      });
+      console.log(this.formCategory.value.description);
     });
-    console.log(this.formCategory.value.description);
   }
   submitNote() {
     console.log(this.formNote.value.content);
@@ -117,4 +122,18 @@ export class HomeComponent implements OnInit {
         this.notesFilter = data;  
         })
       }
+    NotitieBewerken(content) {
+      alert(document.getElementById(content).id.valueOf());
+    }
+    NotitieVerwijderen(idNote) {
+      alert(idNote);
+      idNote = Number(idNote);
+      this.apiService.deleteNote(idNote).subscribe((data) => {
+        console.log(data);
+    });
+    }
+    categoryFilter: string;
+    FilterCategoryToepassen(filter){
+      alert(this.categoryFilter);
+    }
   }

@@ -1,20 +1,41 @@
 <h1>Welkom {{activeUser}}</h1>
-<form [formGroup]="formCategory" (ngSubmit)="submitCategory()">
-  <div *ngFor="let category of categories">
-    <input type="checkbox" (change)="onChangeCategory(category.description, $event.target.checked)" />
-    {{ category.description }}
-  </div>
-  <button>Filter toepassen</button><!--disable wanneer er geen opties geselecteerd zijn-->
-</form>
-<!-- <form [formGroup]="formNote" (ngSubmit)="submitNote()">
+<table>
+  <tr>
+    <td colspan="2">Filteren op categorie</td>
+  </tr>
+  <tr>
+    <td>
+      <select id="categoryFilter">
+        <option value=-1 >--- Kies een categorie ---</option>
+      <option  *ngFor="let category of categories" value={{category.id}}>{{ category.description }}</option>
+      </select>
+    </td>
+    <td><button (click)=FilterCategoryToepassen(categoryFilter)>Filter toepassen</button></td>
+  </tr>
+  <tr>
+    <td>
+      <select  ng-options="opt.id as opt.name for opt in users" ng-model="categoryFilter">
+    </td>
+    <td><button (click)=FilterCategoryToepassenTest()>Filter toepassen</button></td>
+  </tr>
+</table>
+<h3>{{categoryFilter}}</h3>
+
   <div *ngFor="let note of notes">
-    <input type="checkbox" (change)="onChangeNote(note.content, $event.target.checked)" />
-    <a href="/login">{{ note.content }}</a>
+    <input type="text" name={{note.id}} [disabled]= true value={{note.content}}/>
+    <button (click)="NotitieBewerken(note.id)">Notitie bewerken</button>
+    <button (click)="NotitieVerwijderen(note.id)">Notitie verwijderen</button>
   </div>
-  <button>submit</button>
-</form>-->
+
+  <div *ngFor="let note of notesNaFilter">
+    {{ note }}
+  </div>
 
 
-<div *ngFor="let note of notesNaFilter">
-  {{ note }}
-</div>
+  <!-- <form [formGroup]="formCategory" (ngSubmit)="submitCategory()">
+    <div *ngFor="let category of categories">
+      <input type="checkbox" (change)="onChangeCategory(category.description, $event.target.checked)" />
+      {{ category.description }}
+    </div>
+    <button>Filter toepassen</button>
+  </form> -->

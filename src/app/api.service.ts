@@ -67,6 +67,14 @@ export class APIService {
   addNoteForUser = (userName: string, content: string, category : string) => {
     return this.http.post(this.route + "/users/"+userName+"/notes", {content: content, category: category});
   }
+  //verwijder een notitie toe een bepaalde gebruiker
+  //deleteNote = (userName: string, content: string, category : string) => {
+  //  return this.http.delete(this.route + "/users/"+userName+"/notes?content=" + content+ "&category=" + category);
+  //}
+  deleteNote = (idNote: number) => {
+    alert(idNote)
+    return this.http.delete(this.route + "/notes?idNote=" + idNote);
+  }
   //haal de lijst van alle notities op voor een bepaalde gebruiker
   getNotesWithSubstringFromUser = (userName: string, searchContent: string, category: string) => {
     return this.http.get(this.route + "/users/"+userName+"/notes?searchContent=" + searchContent + "&category=" + category);

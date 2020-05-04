@@ -66,7 +66,9 @@ export class AppComponent
   constructor(apiService: APIService)
   {
     this.apiServiceApp = apiService;
-    //this.vulDatabaseMetMockData();
+    //this.vulDatabaseMetMockDataUsers();
+    //this.vulDatabaseMetMockDataCategories();
+    // this.vulDatabaseMetMockDataNotes();
   }  
   
   ngOnInit(): void {
@@ -192,98 +194,81 @@ export class AppComponent
   }
   
   //nep data om de functies te controleren
-  vulDatabaseMetMockData() {
-    //gebruikers toevoegen
-    this.apiServiceApp.addUser("Gina").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Chantal").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Sonja").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Thierry").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Karel").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Tim").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Marie").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Jonathan").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Ilse").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Isabel").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Peter").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("David").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Geert").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addUser("Tom").subscribe((data) => {
-      console.log(data);})
+    vulDatabaseMetMockDataUsers() {
 
-    //categorien toevoegen
-    this.apiServiceApp.addCategory("Gina", "prive").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addCategory("Gina", "dringend").subscribe((data) => {
-      console.log(data);})
-      //notities toevoegen
-    this.apiServiceApp.addNoteForUser("Gina", "bureau kuisen","dringend").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addNoteForUser("Gina", "facebook checken","prive").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addNoteForUser("Gina", "boodschappen doen","prive").subscribe((data) => {
-      console.log(data);})  
-      
-    //categorien toevoegen
-    this.apiServiceApp.addCategory("Chantal", "prive").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addCategory("Chantal", "dringend").subscribe((data) => {
-      console.log(data);})
-    //notities toevoegen
-    this.apiServiceApp.addNoteForUser("Chantal", "bureau kuisen","dringend").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addNoteForUser("Chantal", "facebook checken","prive").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addNoteForUser("Chantal", "dochter bellen","prive").subscribe((data) => {
-      console.log(data);})
-      
-    //categorien toevoegen
-    this.apiServiceApp.addCategory("Sonja", "dringend").subscribe((data) => {
-      console.log(data);})
-    //notities toevoegen
-  this.apiServiceApp.addNoteForUser("Sonja", "facturen bezorgen","dringend").subscribe((data) => {
-    console.log(data);})
-    
-    //categorien toevoegen
-    this.apiServiceApp.addCategory("Karel", "prive").subscribe((data) => {
-      console.log(data);})
-    //notities toevoegen
-    this.apiServiceApp.addNoteForUser("Karel", "personeel beoordelen","prive").subscribe((data) => {
-      console.log(data);})
-    this.apiServiceApp.addNoteForUser("Karel", "avondje uit","prive").subscribe((data) => {
-      console.log(data);})
-    
-    //categorien toevoegen
-    this.apiServiceApp.addCategory("Marie", "dringend").subscribe((data) => {
-      console.log(data);})
-    //notities toevoegen
-    this.apiServiceApp.addNoteForUser("Marie", "les gaan volgen","dringend").subscribe((data) => {
-      console.log(data);})
-    
-    //categorien toevoegen
-    this.apiServiceApp.addCategory("Tom", "prive").subscribe((data) => {
-      console.log(data);})
-    //notities toevoegen
-    this.apiServiceApp.addNoteForUser("Tom", "vrouw bellen","prive").subscribe((data) => {
-      console.log(data);})
-    
-    //categorien toevoegen
-    this.apiServiceApp.addCategory("Ilse", "dringend").subscribe((data) => {
-      console.log(data);})
-    //notities toevoegen
-    this.apiServiceApp.addNoteForUser("Ilse", "infobrochure verspreiden","dringend").subscribe((data) => {
-      console.log(data);})
-  }
+      this.apiServiceApp.addUser("Gina").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Chantal").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Sonja").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Thierry").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Karel").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Tim").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Marie").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Jonathan").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Ilse").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Isabel").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Peter").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("David").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Geert").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addUser("Tom").subscribe((data) => {
+        console.log(data);})
+    }
+    vulDatabaseMetMockDataCategories() {
+      this.apiServiceApp.addCategory("Gina", "prive").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addCategory("Gina", "dringend").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addCategory("Chantal", "prive").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addCategory("Chantal", "dringend").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addCategory("Sonja", "dringend").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addCategory("Karel", "prive").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addCategory("Marie", "dringend").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addCategory("Tom", "prive").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addCategory("Ilse", "dringend").subscribe((data) => {
+        console.log(data);})
+    }
+    vulDatabaseMetMockDataNotes() {
+      this.apiServiceApp.addNoteForUser("Gina", "bureau kuisen","dringend").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addNoteForUser("Gina", "facebook checken","prive").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addNoteForUser("Gina", "boodschappen doen","prive").subscribe((data) => {
+        console.log(data);})          
+      this.apiServiceApp.addNoteForUser("Chantal", "bureau kuisen","dringend").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addNoteForUser("Chantal", "facebook checken","prive").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addNoteForUser("Chantal", "dochter bellen","prive").subscribe((data) => {
+        console.log(data);})        
+      this.apiServiceApp.addNoteForUser("Sonja", "facturen bezorgen","dringend").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addNoteForUser("Karel", "personeel beoordelen","prive").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addNoteForUser("Karel", "avondje uit","prive").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addNoteForUser("Marie", "les gaan volgen","dringend").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addNoteForUser("Tom", "vrouw bellen","prive").subscribe((data) => {
+        console.log(data);})
+      this.apiServiceApp.addNoteForUser("Ilse", "infobrochure verspreiden","dringend").subscribe((data) => {
+        console.log(data);})
+    }
 }
