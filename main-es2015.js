@@ -282,7 +282,7 @@ class AppComponent {
             this.categorieNotitieToevoegen = "";
         };
         this.apiServiceApp = apiService;
-        this.vulDatabaseMetMockData();
+        //this.vulDatabaseMetMockData();
     }
     ngOnInit() {
     }
@@ -601,15 +601,10 @@ class HomeComponent {
     submitCategory() {
         this.notesNaFilter = [];
         this.filters = this.formCategory.value.description;
-        alert("ophalen filter");
         this.OphalenNotitie(this.filters);
-        alert("notities zijn opgehaald");
-        alert(this.notesFilter[0].content + "notesFilter doorlopen");
         this.notesFilter.forEach((note) => {
             this.notesNaFilter.push(note.content);
-            alert("notesNaFilter gevuld");
         });
-        alert("nu al de filter loggen?");
         console.log(this.formCategory.value.description);
     }
     submitNote() {
@@ -628,12 +623,9 @@ class HomeComponent {
         });
     }
     OphalenNotitie(filter) {
-        alert("OphalenNotitie");
         this.apiService.getNotesFromUser(this.activeUser, "", filter).subscribe((data) => {
-            alert("apiService bezocht");
             //console.log(data);   
             this.notesFilter = data;
-            alert("notesFilter gevuld");
         });
     }
 }

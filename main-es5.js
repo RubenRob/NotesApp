@@ -426,8 +426,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           _this2.categorieNotitieToevoegen = "";
         };
 
-        this.apiServiceApp = apiService;
-        this.vulDatabaseMetMockData();
+        this.apiServiceApp = apiService; //this.vulDatabaseMetMockData();
       }
 
       _createClass(AppComponent, [{
@@ -895,16 +894,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           this.notesNaFilter = [];
           this.filters = this.formCategory.value.description;
-          alert("ophalen filter");
           this.OphalenNotitie(this.filters);
-          alert("notities zijn opgehaald");
-          alert(this.notesFilter[0].content + "notesFilter doorlopen");
           this.notesFilter.forEach(function (note) {
             _this4.notesNaFilter.push(note.content);
-
-            alert("notesNaFilter gevuld");
           });
-          alert("nu al de filter loggen?");
           console.log(this.formCategory.value.description);
         }
       }, {
@@ -937,12 +930,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function OphalenNotitie(filter) {
           var _this7 = this;
 
-          alert("OphalenNotitie");
           this.apiService.getNotesFromUser(this.activeUser, "", filter).subscribe(function (data) {
-            alert("apiService bezocht"); //console.log(data);   
-
+            //console.log(data);   
             _this7.notesFilter = data;
-            alert("notesFilter gevuld");
           });
         }
       }]);
