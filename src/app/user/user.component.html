@@ -1,36 +1,13 @@
-<h1>Welkom, gelieve uw gebruikersnaam op te geven</h1>
 
-{{message}}
-
-<br>
-<br>
-<input type="text" [(ngModel)]="loginUserName"/>
-<button (click)="inloggen()">Notities weergeven</button>
-<br>
-<br>
-<div>  
-  <ng-container *ngIf="validUser;then activeUserContent;else newUserContent">
-  </ng-container>
-  
-  <ng-template #activeUserContent>
-    <app-user [loginUser] = "loginUser"></app-user>
-  </ng-template>
-
-  <ng-template #newUserContent>
-    {{message}}
-    <br>
-    <button (click)="nieuweGebruiker()">Nieuwe gebruiker</button>
-  </ng-template>
-  
-
-</div>
-<br>
-<br>
-Users
+{{loginUser.name }}
+{{loginUser.id }}
+<button (click)="getUser(loginUser.name)">Id gebruiker</button>
+<button (click)="getCategoriesOfUser(loginUser.id )">Lijst categoriën van {{loginUser.name}}</button>
+<!-- Users
 <br>
 <br>
 <button (click)="getUsers()">Lijst gebruikers</button>
-<!--<button (click)="getUser(naam)">Id gebruiker</button>-->
+<button (click)="getUser(loginUser.name)">Id gebruiker</button>
 <button (click)="addUser()">Gebruikers toevoegen</button>
 <button (click)="delUser()">Verwijder gebruiker</button>
 <br>
@@ -38,7 +15,7 @@ Users
 categories <br>
 <br>
 <button (click)="getCategories()">Lijst categoriën</button>
-<!--<button (click)="getCategoriesOfUser(loginUser.id )">Lijst categoriën van {{loginUser.name}}</button>-->
+<button (click)="getCategoriesOfUser(loginUser.id )">Lijst categoriën van {{loginUser.name}}</button>
 <button (click)="addCategoriesForUser()">Categorie toevoegen</button>
 <button (click)="deleteCategoriesOfUser()">Verwijder Categorie</button>
 <br>
@@ -46,8 +23,8 @@ categories <br>
 Notes <br>
 <br>
 <button (click)="getNotes()">Lijst notities</button>
-<!--<button (click)="getNotesOfUser()">Lijst notities van {{loginUser.name}}</button>-->
-<button (click)="addNoteForUser()">Notitie  toevoegen</button>
+<button (click)="getNotesOfUser()">Lijst notities van {{loginUser.name}}</button>
+<button (click)="addNoteForUser()">Notitie  toevoegen</button> -->
 
  
 
@@ -92,4 +69,3 @@ Notes <br>
     </div>
     <button>Filter toepassen</button>
   </form> -->
-

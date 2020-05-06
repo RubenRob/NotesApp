@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 
 import { APIService } from '../api.service';
@@ -18,22 +18,20 @@ interface Category {
   description: string;
   userId: number;
 }
-
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  selector: 'app-user',
+  templateUrl: './user.component.html',
+  styleUrls: ['./user.component.css']
 })
+export class UserComponent implements OnInit {
 
-export class HomeComponent implements OnInit {
-
+  
   private apiService: APIService;
-    
-    //ingelogde gebruiker
-    loginUser: User;
-    activeUserName="Gina";
-    loginUserId;//loginUser.id;
-    loginUserName = this.activeUserName;//loginUser.name;
+  //ingelogde gebruiker
+  @Input() loginUser;
+
+    loginUserId=15;//this.userUserComponent.id;
+    loginUserName ="Tom";//this.loginUser.name;
     validUser: boolean = false;
     message;
     //moeten van invoervelden komen:
@@ -56,27 +54,6 @@ export class HomeComponent implements OnInit {
   constructor(ApiService: APIService, private formBuilder: FormBuilder) {
     this.apiService = ApiService;
   } 
-
-  inloggen(){
-    //gebruiker ophalen
-    this.apiService.getUser(this.loginUserName).subscribe((data: User) => {
-      console.log(data);
-      this.loginUser= data;
-      if(this.loginUser.name === undefined) {
-        this.validUser= false;
-        this.message= "Gebruiker " + this.loginUserName + " is niet gekend!";
-        return;
-      }
-        else {
-          this.validUser= true;
-          this.message= "Welkom " + this.loginUser.name +", met id "+ this.loginUser.id;
-        }
-  })
-}
-
-  nieuweGebruiker() {
-    alert("aanmelden");
-  }
 
   filterCategory(event){
     alert(event);
@@ -213,3 +190,4 @@ export class HomeComponent implements OnInit {
   //   console.log(this.formNote.value.content);
   // }
 }
+

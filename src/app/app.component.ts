@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm, FormBuilder } from '@angular/forms';
 import { APIService } from './api.service';
+import { HomeComponent } from './home/home.component';
 
+interface User
+{
+  id: Number;
+  name: String;
+}
 interface Gebruiker
 {
   id: Number;
@@ -68,152 +74,193 @@ export class AppComponent
     this.apiServiceApp = apiService;
     //this.vulDatabaseMetMockDataUsers();
     //this.vulDatabaseMetMockDataCategories();
-    // this.vulDatabaseMetMockDataNotes();
+    //this.vulDatabaseMetMockDataNotes();
   }  
   
   ngOnInit(): void {
-  }
+   }
 
-  //
-  //bewerkingen op "/users"
-  //
+  // //
+  // //bewerkingen op "/users"
+  // //
   
-  //haal de lijst van alle gebruikers op
-  lijstGebruikers = () => {
-    this.apiServiceApp.getUsers().subscribe((data: Gebruiker[]) => {
-      console.log(data);   
-      this.gebruikers = data;
-      })
-  }
-  //voeg een gebruiker toe
-  toevoegenGebruiker = () => {
-    this.apiServiceApp.addUser(this.nieuweGebruiker).subscribe((data) => {
-      console.log(data);
-      if(data.error == null)
-        this.messageGebruikerToevoegen = data.success;
-      else
-        this.messageGebruikerToevoegen = data.error;
-    });
-    this.nieuweGebruiker = "";
-  }
-  //checkt of een gebruiker reeds bestaat
-  bestaatGebruiker = () =>{
-    this.apiServiceApp.getUser(this.gebruiker).subscribe((data) => {
-      console.log(data);
-      if(data.error == null)
-        this.messageGebruikerBestaat = data.success;
-      else
-        this.messageGebruikerBestaat = data.error;
-    });    
-    this.gebruiker = "";
-  }
-  //verwijder een gebruiker
-  verwijderenGebruiker = () => {
-    this.apiServiceApp.deleteUser(this.naamVerwijderen).subscribe((data) => {
-        console.log(data);
-        if(data.error == null)
-          this.messageGebruikerVerwijderen = data.success;
-        else
-          this.messageGebruikerVerwijderen = data.error;
-    });
-    this.lijstGebruikers();
-    this.naamVerwijderen = "";
-  }
+  // //haal de lijst van alle gebruikers op
+  // lijstGebruikers = () => {
+  //   this.apiServiceApp.getUsers().subscribe((data: Gebruiker[]) => {
+  //     console.log(data);   
+  //     this.gebruikers = data;
+  //     })
+  // }
+  // //voeg een gebruiker toe
+  // toevoegenGebruiker = () => {
+  //   this.apiServiceApp.addUser(this.nieuweGebruiker).subscribe((data) => {
+  //     console.log(data);
+  //     if(data.error == null)
+  //       this.messageGebruikerToevoegen = data.success;
+  //     else
+  //       this.messageGebruikerToevoegen = data.error;
+  //   });
+  //   this.nieuweGebruiker = "";
+  // }
+  // //checkt of een gebruiker reeds bestaat
+  // bestaatGebruiker = () =>{
+  //   this.apiServiceApp.getUser(this.gebruiker).subscribe((data) => {
+  //     console.log(data);
+  //     if(data.error == null)
+  //       this.messageGebruikerBestaat = data.success;
+  //     else
+  //       this.messageGebruikerBestaat = data.error;
+  //   });    
+  //   this.gebruiker = "";
+  // }
+  // //verwijder een gebruiker
+  // verwijderenGebruiker = () => {
+  //   this.apiServiceApp.deleteUser(this.naamVerwijderen).subscribe((data) => {
+  //       console.log(data);
+  //       if(data.error == null)
+  //         this.messageGebruikerVerwijderen = data.success;
+  //       else
+  //         this.messageGebruikerVerwijderen = data.error;
+  //   });
+  //   this.lijstGebruikers();
+  //   this.naamVerwijderen = "";
+  // }
 
-  //
-  //bewerkingen op "/notescategory"
-  //
+  // //
+  // //bewerkingen op "/notescategory"
+  // //
 
-  //haal de lijst van alle categorien op
-  lijstCategorie = () =>{
-    this.apiServiceApp.getCategories().subscribe((data: Category[]) => {
-      console.log(data);
-      this.categorien = data;
-    })
-  }
-  //haal de lijst van alle categorien op
-  lijstCategorienVanGebruiker = () =>{
-    this.apiServiceApp.getCategoriesFromUser(this.actieveGebruiker).subscribe((data: Category[]) => {
-      console.log(data);
-      this.categorienVanGebruiker = data;
-    })
-  }
-  //voeg een categorie toe
-  toevoegenCategorie = () =>{
-    this.apiServiceApp.addCategory(this.naamCategorieToevoegen, this.omschrijvingCategorieToevoegen).subscribe((data) => {
-      console.log(data);
-      if(data.error == null)
-        this.messageGebruikerBestaat = data.success;
-      else
-        this.messageGebruikerBestaat = data.error;
-    });    
-  }
+  // //haal de lijst van alle categorien op
+  // lijstCategorie = () =>{
+  //   this.apiServiceApp.getCategories().subscribe((data: Category[]) => {
+  //     console.log(data);
+  //     this.categorien = data;
+  //   })
+  // }
+  // //haal de lijst van alle categorien op
+  // lijstCategorienVanGebruiker = () =>{
+  //   this.apiServiceApp.getCategoriesFromUser(this.actieveGebruiker).subscribe((data: Category[]) => {
+  //     console.log(data);
+  //     this.categorienVanGebruiker = data;
+  //   })
+  // }
+  // //voeg een categorie toe
+  // toevoegenCategorie = () =>{
+  //   this.apiServiceApp.addCategory(this.naamCategorieToevoegen, this.omschrijvingCategorieToevoegen).subscribe((data) => {
+  //     console.log(data);
+  //     if(data.error == null)
+  //       this.messageGebruikerBestaat = data.success;
+  //     else
+  //       this.messageGebruikerBestaat = data.error;
+  //   });    
+  // }
 
-  //
-  //bewerkingen op "/Notes"
-  //
+  // //
+  // //bewerkingen op "/Notes"
+  // //
 
-  //haal de lijst van alle notities op
-  lijstNotities = () => {
-    this.apiServiceApp.getNotes().subscribe((data: Notitie[]) => {
-         console.log(data);
-        this.notities = data;
-      })
-  }
-  //haal de lijst van alle notities op voor een bepaalde gebruiker
-  lijstNotitiesVanGebruiker = () => {
-    this.notitiesVanGebruikerFilterenOpCategorie();
-    //this.apiServiceApp.getNotesFromUser(this.actieveGebruiker).subscribe((data: Notitie[]) => {
-     // console.log(data);
-     //this.notitiesGebruiker = data;
-    //});
-    this.naamNotitieTonen = "";
-  }
-  //voeg een notitie toe een bepaalde gebruiker
-  toevoegenNotitieVoorGebruiker = () => {
-    this.apiServiceApp.addNoteForUser(this.naamNotitieToevoegen, this.inhoudNotitieToevoegen,this.categorieNotitieToevoegen).subscribe((data) => {
-      console.log(data);
-    });
-    this.naamNotitieToevoegen = "";
-    this.inhoudNotitieToevoegen = "";
-    this.categorieNotitieToevoegen = "";
-  }
-  notitiesVanGebruikerDieZoekStringBevatten() {
-    this.notitiesVanGebruikerFilterenOpCategorie();
-    // this.apiServiceApp.getNotesWithSubstringFromUser(this.actieveGebruiker, this.zoekString).subscribe((data: Notitie[]) => {
-    //   console.log(data);
-    //  this.gevondenNotities = data;
-    // });
-    this.zoekString = "";
-  }
-  notitiesVanGebruikerFilterenOpCategorie() {
-    this.apiServiceApp.getNotesWithSubstringFromUser(this.actieveGebruiker, this.zoekString, this.filterCategorie).subscribe((data: Notitie[]) => {
-      console.log(data);
-     this.gevondenNotitiesFilter = data;
-    });
-  }
+  // //haal de lijst van alle notities op
+  // lijstNotities = () => {
+  //   this.apiServiceApp.getNotes().subscribe((data: Notitie[]) => {
+  //        console.log(data);
+  //       this.notities = data;
+  //     })
+  // }
+  // //haal de lijst van alle notities op voor een bepaalde gebruiker
+  // lijstNotitiesVanGebruiker = () => {
+  //   this.notitiesVanGebruikerFilterenOpCategorie();
+  //   //this.apiServiceApp.getNotesFromUser(this.actieveGebruiker).subscribe((data: Notitie[]) => {
+  //    // console.log(data);
+  //    //this.notitiesGebruiker = data;
+  //   //});
+  //   this.naamNotitieTonen = "";
+  // }
+  // //voeg een notitie toe een bepaalde gebruiker
+  // toevoegenNotitieVoorGebruiker = () => {
+  //   this.apiServiceApp.addNoteForUser(this.naamNotitieToevoegen, this.inhoudNotitieToevoegen,this.categorieNotitieToevoegen).subscribe((data) => {
+  //     console.log(data);
+  //   });
+  //   this.naamNotitieToevoegen = "";
+  //   this.inhoudNotitieToevoegen = "";
+  //   this.categorieNotitieToevoegen = "";
+  // }
+  // notitiesVanGebruikerDieZoekStringBevatten() {
+  //   this.notitiesVanGebruikerFilterenOpCategorie();
+  //   // this.apiServiceApp.getNotesWithSubstringFromUser(this.actieveGebruiker, this.zoekString).subscribe((data: Notitie[]) => {
+  //   //   console.log(data);
+  //   //  this.gevondenNotities = data;
+  //   // });
+  //   this.zoekString = "";
+  // }
+  // notitiesVanGebruikerFilterenOpCategorie() {
+  //   this.apiServiceApp.getNotesWithSubstringFromUser(this.actieveGebruiker, this.zoekString, this.filterCategorie).subscribe((data: Notitie[]) => {
+  //     console.log(data);
+  //    this.gevondenNotitiesFilter = data;
+  //   });
+  // }
   
+  userid;
   //nep data om de functies te controleren
     vulDatabaseMetMockDataUsers() {
 
       this.apiServiceApp.addUser("Gina").subscribe((data) => {
-        console.log(data);})
+        console.log(data);
+        this.apiServiceApp.getUser("Gina").subscribe((data: User)=>{
+        this.userid=data.id;
+        this.apiServiceApp.addCategoriesForUser(this.userid, "prive").subscribe((data) => {
+          console.log(data);})
+        this.apiServiceApp.addCategoriesForUser(this.userid, "dringend").subscribe((data) => {
+          console.log(data);})
+        })
+      })
       this.apiServiceApp.addUser("Chantal").subscribe((data) => {
-        console.log(data);})
+        console.log(data);
+        this.apiServiceApp.getUser("Chantal").subscribe((data: User)=>{
+        this.userid=data.id;
+        this.apiServiceApp.addCategoriesForUser(this.userid, "prive").subscribe((data) => {
+          console.log(data);})
+        this.apiServiceApp.addCategoriesForUser(this.userid, "dringend").subscribe((data) => {
+          console.log(data);})        
+        })
+      })
       this.apiServiceApp.addUser("Sonja").subscribe((data) => {
-        console.log(data);})
+        console.log(data);
+      this.apiServiceApp.getUser("Sonja").subscribe((data: User)=>{
+        this.userid=data.id;
+        this.apiServiceApp.addCategoriesForUser(this.userid, "dringend").subscribe((data) => {
+          console.log(data);})
+        })
+      })
       this.apiServiceApp.addUser("Thierry").subscribe((data) => {
         console.log(data);})
       this.apiServiceApp.addUser("Karel").subscribe((data) => {
-        console.log(data);})
+        console.log(data);
+        this.apiServiceApp.getUser("Karel").subscribe((data: User)=>{
+        this.userid=data.id;
+        this.apiServiceApp.addCategoriesForUser(this.userid, "prive").subscribe((data) => {
+          console.log(data);})
+        })
+      })
       this.apiServiceApp.addUser("Tim").subscribe((data) => {
         console.log(data);})
       this.apiServiceApp.addUser("Marie").subscribe((data) => {
-        console.log(data);})
+        console.log(data);
+        this.apiServiceApp.getUser("Marie").subscribe((data: User)=>{
+        this.userid=data.id;
+        this.apiServiceApp.addCategoriesForUser(this.userid, "dringend").subscribe((data) => {
+          console.log(data);})
+        })
+      })
       this.apiServiceApp.addUser("Jonathan").subscribe((data) => {
         console.log(data);})
       this.apiServiceApp.addUser("Ilse").subscribe((data) => {
-        console.log(data);})
+        console.log(data);
+        this.apiServiceApp.getUser("Ilse").subscribe((data: User)=>{
+        this.userid=data.id;
+        this.apiServiceApp.addCategoriesForUser(this.userid, "dringend").subscribe((data) => {
+          console.log(data);})
+        })
+      })
       this.apiServiceApp.addUser("Isabel").subscribe((data) => {
         console.log(data);})
       this.apiServiceApp.addUser("Peter").subscribe((data) => {
@@ -223,27 +270,15 @@ export class AppComponent
       this.apiServiceApp.addUser("Geert").subscribe((data) => {
         console.log(data);})
       this.apiServiceApp.addUser("Tom").subscribe((data) => {
-        console.log(data);})
+        console.log(data);
+        this.apiServiceApp.getUser("Tom").subscribe((data: User)=>{
+        this.userid=data.id;
+        this.apiServiceApp.addCategoriesForUser(this.userid, "prive").subscribe((data) => {
+          console.log(data);})
+        })
+      })
     }
     vulDatabaseMetMockDataCategories() {
-      this.apiServiceApp.addCategory("Gina", "prive").subscribe((data) => {
-        console.log(data);})
-      this.apiServiceApp.addCategory("Gina", "dringend").subscribe((data) => {
-        console.log(data);})
-      this.apiServiceApp.addCategory("Chantal", "prive").subscribe((data) => {
-        console.log(data);})
-      this.apiServiceApp.addCategory("Chantal", "dringend").subscribe((data) => {
-        console.log(data);})
-      this.apiServiceApp.addCategory("Sonja", "dringend").subscribe((data) => {
-        console.log(data);})
-      this.apiServiceApp.addCategory("Karel", "prive").subscribe((data) => {
-        console.log(data);})
-      this.apiServiceApp.addCategory("Marie", "dringend").subscribe((data) => {
-        console.log(data);})
-      this.apiServiceApp.addCategory("Tom", "prive").subscribe((data) => {
-        console.log(data);})
-      this.apiServiceApp.addCategory("Ilse", "dringend").subscribe((data) => {
-        console.log(data);})
     }
     vulDatabaseMetMockDataNotes() {
       this.apiServiceApp.addNoteForUser("Gina", "bureau kuisen","dringend").subscribe((data) => {
