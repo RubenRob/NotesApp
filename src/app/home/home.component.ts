@@ -30,54 +30,124 @@ export class HomeComponent implements OnInit {
   private apiService: APIService;
     
     //ingelogde gebruiker
-    activeUserNames = "Gina";
-
 
     loginUser: User;
-    loginUserName= this.activeUserNames;
     loginUserId;
-    validUser: boolean = false;
-    message;
     toevoegenNotitie= true;
     selectednotitieCategorie="-1";
     //lijst van gebruikers
     users: User[] = [];
     //lijst van categoriën
     categories: Category[] = [];
-    categoriesOfUser: Category[] = [];
     //lijst van notities
-    notesOfUser: Note[] = [];
-    notes: Note[] = [];
     notesOfUserWithCategoryFilter: Note[] = [];
 
   constructor(ApiService: APIService) {
     this.apiService = ApiService;
   } 
+  message0: string = "Welkom bij notesApp";
+  message1: string = "Geef uw gebruikersnaam in om in te loggen.";
+  message2: string = "Nieuwe gebruiker?  Maak een account aan.";
+  loginUserName: string = "Gina";
 
+  ngOnInit() {
+  }
+  
+  //userExists is false wanneer loginUserName niet gekend is
+  userExists: boolean = false;
+  //gebruiker met naam loginUserName, diens categoriën en notities
+  activeUser: User;
+  categoriesOfUser: Category[] = [];
+  notesOfUser: Note[] = [];
+  //lijst van weer te geven notities
+  notes: Note[] = [];
+
+  //controleer of de ingegeven naam bestaat en ga de gegevens van die gebruiker ophalen  
+  getUser() {
+    this.apiService.getUser(this.loginUserName).subscribe((data: User) => {
+      console.log(data);
+      this.loginUser= data;
+      if(this.loginUser.name === undefined) {
+        this.userExists= false;
+        this.message1= "Gebruiker " + this.loginUserName + " is niet gekend!  Probeer opnieuw of maak een account aan.";
+        return;
+      }
+        else {
+          this.userExists= true;
+          this.message0= "Welkom " + this.loginUser.name;
+        }
+      this.apiService.getCategoriesOfUser(this.loginUser.id).subscribe((data: Category[]) => {
+        console.log(data);
+        this.categoriesOfUser = data;
+      })
+      this.apiService.getNotesOfUser(this.loginUser.id).subscribe((data: Note[]) => {
+        console.log(data);
+        //notesOfUser is de lijst met alle notities van de gebruiker
+        this.notesOfUser = data;
+        //notes is de lijst met weer te geven notities
+        this.notes=data;
+      })
+    })
+  }
+  
+  //velden voor de nieuwe account weergeven
+  addAccountClicked: boolean = false;
+  newUserName: string = "";
+  addAccount(){
+    this.addAccountClicked = true;
+    this.newUserName = this.loginUserName;
+  }
+  //gebruiker toevoegen
+  addUser() {
+    this.loginUserName="";
+    this.apiService.addUser(this.newUserName).subscribe((data) => {
+      console.log(data);
+      //zonder fout is de gebruiker geregistreerd
+      if(data.error == null) {
+        this.message1 = "U bent geregistreerd, geef uw gebruikersnaam in om in te loggen.";
+        this.addAccountClicked = false;
+        this.message2 = "Nieuwe gebruiker?  Maak een account aan."
+      }
+      else {
+        this.message2 = "Deze loginnaam bestaat al, gelieve een andere te kiezen."
+      }
+    })
+  }
+
+  //eenmaal ingelogd
+  //lijst notities tonen, maar die hebben we al
+
+  onItemClick(noteId)
+  {
+    console.log(noteId);
+  }
+
+
+//uit te kuisen code
   inloggen(){
     //gebruiker ophalen
     this.apiService.getUser(this.loginUserName).subscribe((data: User) => {
       console.log(data);
       this.loginUser= data;
       if(this.loginUser.name === undefined) {
-        this.validUser= false;
-        this.message= "Gebruiker " + this.loginUserName + " is niet gekend!";
+        this.userExists= false;
+        this.message1= "Gebruiker " + this.loginUserName + " is niet gekend!";
         return;
       }
         else {
-          this.validUser= true;
-          this.message= "Welkom " + this.loginUser.name +", met id "+ this.loginUser.id;
+          this.userExists= true;
+          this.message2= "Welkom " + this.loginUser.name;
         }
-  })
-  this.apiService.getCategoriesOfUser(this.loginUser.id).subscribe((data: Category[]) => {
-    console.log(data);
-    this.categoriesOfUser = data;
-  })
-  this.apiService.getNotesOfUser(this.loginUser.id).subscribe((data: Note[]) => {
-    console.log(data);
-    this.notesOfUser = data;
-    this.notes=data;
-  })
+    this.apiService.getCategoriesOfUser(this.loginUser.id).subscribe((data: Category[]) => {
+      console.log(data);
+      this.categoriesOfUser = data;
+    })
+    this.apiService.getNotesOfUser(this.loginUser.id).subscribe((data: Note[]) => {
+      console.log(data);
+      this.notesOfUser = data;
+      this.notes=data;
+    })
+})
 }
 nieuweGebruiker() {
   alert("aanmelden");
@@ -89,7 +159,12 @@ nieuweGebruiker() {
   filterCategory(event){
     this.categoryFilter= event.target.value;
   }
-
+  selectedFilterCategorie: string = "-1";
+showAllNotes(){
+  this.notes= this.notesOfUser;
+  this.filterAan=false;
+  this.selectedFilterCategorie = "-1";
+}
   filterCategoryToepassen(){
       if(this.filterAan) {
         this.notes= this.notesOfUser;
@@ -117,13 +192,13 @@ nieuweGebruiker() {
       alert("U koos geen categorie");
       return;
     }
-      this.apiService.getNotesOfUser(this.loginUser.id).subscribe((data: Note[]) => {
-        console.log(data);
-        this.apiService.addNoteForUser(this.loginUser.id, this.categorieNotitie, this.content).subscribe((data) => {
-          console.log(data);
-        })
-        this.notesOfUser = data;
+    this.apiService.addNoteForUser(this.loginUser.id, this.categorieNotitie, this.content + "(catId: " + this.categorieNotitie + ")").subscribe((data) => {
+      console.log(data);
+      this.apiService.getNotesOfUser(this.loginUser.id).subscribe((notes: Note[]) => {
+        console.log(notes);
+        this.notesOfUser = notes;
       })
+    })
     }
 
     substring="";
@@ -138,14 +213,24 @@ nieuweGebruiker() {
       this.substring="";
       this.notesMetSubstring=[];
     }
+    noteToUpdateId;
     NotitieBewerken(note) {
+      //naam en functie button wijzigen
       this.toevoegenNotitie=false;
+      //velden content en categorie invullen op basis van de bestaande notitie
       this.content=note.content;
       this.selectednotitieCategorie= note.categoryId;
+      //id van de notitie, want die hebben we nodig om in de DB aanpassingen te kunnen doen
+      this.noteToUpdateId = note.id;
     }
     NotitieWijzigen() {
-      alert(this.categorieNotitie);
-      this.toevoegenNotitie=true;
+      this.apiService.updateNoteOfUser(this.noteToUpdateId,this.selectednotitieCategorie,this.content).subscribe((data) => {
+      console.log(data);
+      this.apiService.getNotesOfUser(this.loginUser.id).subscribe((notes: Note[]) => {
+        console.log(notes);
+        this.notesOfUser = notes;
+      })
+    })
     }
     NotitieVerwijderen(noteId) {
       this.apiService.getNotesOfUser(this.loginUser.id).subscribe((data: Note[]) => {
@@ -169,20 +254,6 @@ contentNieuweNotitie:string = "nieuwe notitie van Gina met cat 6"
     this.apiService.getUsers().subscribe((data: User[]) => {
       console.log(data);
       this.users = data;
-    })
-  }
-  getUser(userName) {
-    this.apiService.getUser(userName).subscribe((data: User) => {
-      console.log(data);
-      this.loginUser= data;
-      // this.loginUserId = data.id;
-      // this.loginUserName = data.name;
-    });
-  }
-  //gebruiker toevoegen
-  addUser() {
-    this.apiService.addUser(this.addUser_userName).subscribe((data) => {
-      console.log(data);
     })
   }
   //gebruiker verwijderen
@@ -238,20 +309,6 @@ contentNieuweNotitie:string = "nieuwe notitie van Gina met cat 6"
     })
   }
     //opgekuisd
-
-    ngOnInit() {
-      // this.getUser();
-      // this.getCategories();
-      // this.getNotes();
-      // //Catergorie
-      // this.formCategory = this.formBuilder.group({
-      //   description: this.formBuilder.array([])
-      // });
-      // //Notities
-      // this.formNote = this.formBuilder.group({
-      //   content: this.formBuilder.array([])
-      // });
-    }
 
 
   // onChangeCategory(description: string, isChecked: boolean) {

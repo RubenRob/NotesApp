@@ -1,0 +1,6 @@
+{{loginUser.name}}
+<br>
+{{activeUser.name}}
+<div *ngFor="let note of notes">
+  <input type="text" name={{note.id}} [disabled]= true value="{{note.content}}"/>
+</div>

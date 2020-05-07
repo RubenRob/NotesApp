@@ -76,6 +76,10 @@ export class APIService {
     return this.http.post(this.route + "/users/"+userId+"/categories/"+categoryId+"/notes", {content: content});
   }
   //voeg een notitie toe voor een bepaalde gebruiker
+  updateNoteOfUser = ( noteId: string, categoryId: string, content: string) => {
+    return this.http.patch(this.route + "/notes/"+noteId, {categoryId: categoryId, content: content});
+  }
+  //voeg een notitie toe voor een bepaalde gebruiker
   delNoteOfUser = ( noteId: number) => {
     return this.http.delete(this.route + "/notes?noteId=" + noteId);
   }

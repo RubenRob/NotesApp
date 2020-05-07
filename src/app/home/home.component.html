@@ -1,37 +1,59 @@
-<h1>Welkom, gelieve uw gebruikersnaam op te geven</h1>
+<h2>{{message0}}</h2>
 
-{{message}}
 
-<br>
-<br>
-<input type="text" [(ngModel)]="loginUserName"/>
-<button (click)="inloggen()">Notities weergeven</button>
-<br>
-<br>
 <div>  
-  <ng-container *ngIf="validUser;then activeUserContent;else newUserContent">
+  <ng-container *ngIf="!userExists; then loginContent; else activeUserContent">
   </ng-container>
   
-  <ng-template #activeUserContent>
-   <!--<app-user [loginUser] = "loginUser">hey</app-user>--> 
-  </ng-template>
-
-  <ng-template #newUserContent>
-    {{message}}
+  <!-- loginscherm -->
+  <!-- gebruiker is nog niet gekend -->
+  <ng-template #loginContent>
+    <h4>{{message1}}</h4>
+    <label>Gebruikersnaam</label>
     <br>
-    <button (click)="nieuweGebruiker()">Nieuwe gebruiker</button>
+    <input type="text" [(ngModel)]="loginUserName"/>
+    <button (click)="getUser()">Inloggen</button>
+    <h4>{{message2}}</h4>
+    <div>
+      <ng-container *ngIf="!addAccountClicked; then user; else newUser">
+      </ng-container>
+
+      <ng-template #user>
+        <button (click)="addAccount()">Nieuwe account</button>
+      </ng-template>
+      <ng-template #newUser>
+        <label>Gebruikersnaam</label>
+        <br>
+        <input type="text" [(ngModel)]="newUserName"/>
+        <button (click)="addUser()">Maak account</button>
+      </ng-template>
+    </div>
   </ng-template>
   
+  <!-- userscherm -->
+  <!-- gebruikergegevens zijn gekend -->
+  <ng-template #activeUserContent>
+    {{message0}}
+    <table>
+
+    </table>
+   <!-- <app-notes [loginUser] = "loginUser"></app-notes> -->
+  </ng-template>
+  
+  <!-- userscherm -->
   <table>
     <tr>
       <td>
         <table>
           <tr>
+            <td><button (click)="showAllNotes()">Alle notities weergeven</button></td>
+          </tr>
+          <tr>
             <td><hr>filteren op categorie:</td>
           </tr>
           <tr>
             <td>
-              <select (change)="filterCategory($event)">
+              <select  [(ngModel)]="selectedFilterCategorie" (change)="filterCategory($event)">
                 <option value=-1 >--- Kies een categorie ---</option>
                 <option  *ngFor="let category of categoriesOfUser" value={{category.id}}>{{ category.description }}</option>
               </select>
@@ -90,41 +112,30 @@
                 <input type="text" name={{note.id}} [disabled]= true value="{{note.content}}"/>
                 <button (click)="NotitieBewerken(note)">Notitie bewerken</button>
                 <button (click)="NotitieVerwijderen(note.id)">Notitie verwijderen</button>
-              </div></td>
+              </div>
+            </td>
           </tr>
         </table>   
+      </td>
+      <td>
+        <table>
+          <ul id="notesList">
+            <li *ngFor="let note of notes;let i = index" (click)="onItemClick(note.id)">             
+              {{note.content}}
+            </li>
+          </ul>
+          <!-- <ul class="sub-menu collapse" id="statistics">
+            <li *ngFor="let item of listItems;let i = index" (click)="onItemClick('statistics',i)">{{ item }}</li>
+          </ul> -->
+        </table>
       </td>
 
     </tr>
   </table>
-  
 
-<!-- 
 </div>
 <br>
 <br>
-Users
-<br>
-<br>
-<button (click)="getUsers()">Lijst gebruikers</button>
-<button (click)="getUser(naam)">Id gebruiker</button>
-<button (click)="addUser()">Gebruikers toevoegen</button>
-<button (click)="delUser()">Verwijder gebruiker</button>
-<br>
-<br>
-categories <br>
-<br>
-<button (click)="getCategories()">Lijst categoriën</button>
-<button (click)="getCategoriesOfUser(loginUser.id )">Lijst categoriën van {{loginUser.name}}</button>
-<button (click)="addCategoriesForUser()">Categorie toevoegen</button>
-<button (click)="deleteCategoriesOfUser()">Verwijder Categorie</button>
-<br>
-<br>
-Notes <br>
-<br>
-<button (click)="getNotes()">Lijst notities</button>
-<button (click)="getNotesOfUser()">Lijst notities van {{loginUser.name}}</button>
-<button (click)="addNoteForUser()">Notitie  toevoegen</button> -->
 
 
 

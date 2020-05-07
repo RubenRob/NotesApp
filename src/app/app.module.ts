@@ -9,6 +9,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
+import { NotesComponent } from './notes/notes.component';
 
 
 
@@ -16,6 +17,7 @@ import { HomeComponent } from './home/home.component';
   declarations: [
     AppComponent,
     HomeComponent,
+    NotesComponent,
   ],
   imports: [
     AppRoutingModule,
