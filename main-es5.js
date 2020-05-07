@@ -79,6 +79,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       this.getUsers = function () {
         return _this.http.get(_this.route + "/users");
+      }; //haal een gebruiker op
+
+
+      this.getUser = function (userName) {
+        return _this.http.get(_this.route + "/users/" + userName);
       }; //voeg een gebruiker toe
 
 
@@ -86,61 +91,66 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return _this.http.post(_this.route + "/users", {
           userName: userName
         });
-      }; //haal een gebruiker op
-
-
-      this.getUser = function (userName) {
-        return _this.http.get(_this.route + "/users/" + userName);
       }; //verwijder een gebruiker
 
 
-      this.deleteUser = function (userName) {
-        return _this.http["delete"](_this.route + "/users?userName=" + userName);
+      this.delUser = function (userId) {
+        return _this.http["delete"](_this.route + "/users?userId=" + userId);
       }; //
-      //bewerkingen op "/notescategory"
+      //bewerkingen op "/Categories"
       //
       //haal de lijst van alle categorien op
 
 
       this.getCategories = function () {
-        return _this.http.get(_this.route + "/category");
+        return _this.http.get(_this.route + "/categories");
       }; //haal de lijst van alle categorien van een gebruiker op
 
 
-      this.getCategoriesFromUser = function (userName) {
-        return _this.http.get(_this.route + "/users/" + userName + "/category");
+      this.getCategoriesOfUser = function (userId) {
+        return _this.http.get(_this.route + "/users/" + userId + "/categories");
       }; //voeg een categorie toe voor een bepaalde gebruiker
 
 
-      this.addCategory = function (userName, description) {
-        return _this.http.post(_this.route + "/users/" + userName + "/category", {
+      this.addCategoriesForUser = function (userId, description) {
+        return _this.http.post(_this.route + "/users/" + userId + "/categories", {
           description: description
         });
+      }; //verwijder een gebruiker
+
+
+      this.delCategoriesOfUser = function (categoryId) {
+        return _this.http["delete"](_this.route + "/categories?categoryId=" + categoryId);
       }; //
       //bewerkingen op "/notes"
       //
-      //haal de lijst van alle notities op voor een bepaalde gebruiker
-      //getNotesFromUser = (userName: string) => {
-      // return this.http.get(this.route + "/users/"+userName+"/notes");
-      //}
-      //haal de lijst van alle notities op voor een bepaalde gebruiker
+      //haal de lijst van alle notities op
 
 
-      this.getNotesFromUser = function (userName, searchContent, category) {
-        return _this.http.get(_this.route + "/users/" + userName + "/notes?searchContent=" + searchContent + "&category=" + category);
-      }; //voeg een notitie toe een bepaalde gebruiker
+      this.getNotes = function () {
+        return _this.http.get(_this.route + "/notes");
+      }; //haal de lijst van alle notities van een gebruiker op
 
 
-      this.addNoteForUser = function (userName, content, category) {
-        return _this.http.post(_this.route + "/users/" + userName + "/notes", {
-          content: content,
-          category: category
+      this.getNotesOfUser = function (userId) {
+        return _this.http.get(_this.route + "/users/" + userId + "/notes");
+      }; //haal de lijst van alle notities van een gebruiker op
+
+
+      this.getNotesOfUserWithCategoryFilter = function (userId, categoryId) {
+        return _this.http.get(_this.route + "/users/" + userId + "/categories/" + categoryId + "/notes");
+      }; //voeg een notitie toe voor een bepaalde gebruiker
+
+
+      this.addNoteForUser = function (userId, categoryId, content) {
+        return _this.http.post(_this.route + "/users/" + userId + "/categories/" + categoryId + "/notes", {
+          content: content
         });
-      }; //haal de lijst van alle notities op voor een bepaalde gebruiker
+      }; //voeg een notitie toe voor een bepaalde gebruiker
 
 
-      this.getNotesWithSubstringFromUser = function (userName, searchContent, category) {
-        return _this.http.get(_this.route + "/users/" + userName + "/notes?searchContent=" + searchContent + "&category=" + category);
+      this.delNoteOfUser = function (noteId) {
+        return _this.http["delete"](_this.route + "/notes?noteId=" + noteId);
       };
 
       this.route = 'https://jensjorisdecorte-backend-example-4.glitch.me';
@@ -207,13 +217,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     /* harmony import */
 
 
-    var _login_login_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
-    /*! ./login/login.component */
-    "./src/app/login/login.component.ts");
-    /* harmony import */
-
-
-    var _home_home_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
+    var _home_home_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
     /*! ./home/home.component */
     "./src/app/home/home.component.ts");
 
@@ -222,11 +226,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       redirectTo: 'home',
       pathMatch: 'full'
     }, {
-      path: 'login',
-      component: _login_login_component__WEBPACK_IMPORTED_MODULE_2__["LoginComponent"]
-    }, {
       path: 'home',
-      component: _home_home_component__WEBPACK_IMPORTED_MODULE_3__["HomeComponent"]
+      component: _home_home_component__WEBPACK_IMPORTED_MODULE_2__["HomeComponent"]
     }];
 
     var AppRoutingModule = function AppRoutingModule() {
@@ -307,8 +308,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     /*#__PURE__*/
     function () {
       function AppComponent(apiService) {
-        var _this2 = this;
-
         _classCallCheck(this, AppComponent);
 
         this.title = 'NotesApp';
@@ -322,167 +321,103 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.gevondenNotities = [];
         this.gevondenNotitiesFilter = [];
         this.categorienVanGebruiker = [];
-        this.filterCategorie = "prive"; //
-        //bewerkingen op "/users"
-        //
-        //haal de lijst van alle gebruikers op
-
-        this.lijstGebruikers = function () {
-          _this2.apiServiceApp.getUsers().subscribe(function (data) {
-            console.log(data);
-            _this2.gebruikers = data;
-          });
-        }; //voeg een gebruiker toe
-
-
-        this.toevoegenGebruiker = function () {
-          _this2.apiServiceApp.addUser(_this2.nieuweGebruiker).subscribe(function (data) {
-            console.log(data);
-            if (data.error == null) _this2.messageGebruikerToevoegen = data.success;else _this2.messageGebruikerToevoegen = data.error;
-          });
-
-          _this2.nieuweGebruiker = "";
-        }; //checkt of een gebruiker reeds bestaat
-
-
-        this.bestaatGebruiker = function () {
-          _this2.apiServiceApp.getUser(_this2.gebruiker).subscribe(function (data) {
-            console.log(data);
-            if (data.error == null) _this2.messageGebruikerBestaat = data.success;else _this2.messageGebruikerBestaat = data.error;
-          });
-
-          _this2.gebruiker = "";
-        }; //verwijder een gebruiker
-
-
-        this.verwijderenGebruiker = function () {
-          _this2.apiServiceApp.deleteUser(_this2.naamVerwijderen).subscribe(function (data) {
-            console.log(data);
-            if (data.error == null) _this2.messageGebruikerVerwijderen = data.success;else _this2.messageGebruikerVerwijderen = data.error;
-          });
-
-          _this2.lijstGebruikers();
-
-          _this2.naamVerwijderen = "";
-        }; //
-        //bewerkingen op "/notescategory"
-        //
-        //haal de lijst van alle categorien op
-
-
-        this.lijstCategorie = function () {
-          _this2.apiServiceApp.getCategories().subscribe(function (data) {
-            console.log(data);
-            _this2.categorien = data;
-          });
-        }; //haal de lijst van alle categorien op
-
-
-        this.lijstCategorienVanGebruiker = function () {
-          _this2.apiServiceApp.getCategoriesFromUser(_this2.actieveGebruiker).subscribe(function (data) {
-            console.log(data);
-            _this2.categorienVanGebruiker = data;
-          });
-        }; //voeg een categorie toe
-
-
-        this.toevoegenCategorie = function () {
-          _this2.apiServiceApp.addCategory(_this2.naamCategorieToevoegen, _this2.omschrijvingCategorieToevoegen).subscribe(function (data) {
-            console.log(data);
-            if (data.error == null) _this2.messageGebruikerBestaat = data.success;else _this2.messageGebruikerBestaat = data.error;
-          });
-        }; //
-        //bewerkingen op "/Notes"
-        //
-        //haal de lijst van alle notities op
-
-
-        this.lijstNotities = function () {
-          _this2.apiServiceApp.getNotes().subscribe(function (data) {
-            console.log(data);
-            _this2.notities = data;
-          });
-        }; //haal de lijst van alle notities op voor een bepaalde gebruiker
-
-
-        this.lijstNotitiesVanGebruiker = function () {
-          _this2.notitiesVanGebruikerFilterenOpCategorie(); //this.apiServiceApp.getNotesFromUser(this.actieveGebruiker).subscribe((data: Notitie[]) => {
-          // console.log(data);
-          //this.notitiesGebruiker = data;
-          //});
-
-
-          _this2.naamNotitieTonen = "";
-        }; //voeg een notitie toe een bepaalde gebruiker
-
-
-        this.toevoegenNotitieVoorGebruiker = function () {
-          _this2.apiServiceApp.addNoteForUser(_this2.naamNotitieToevoegen, _this2.inhoudNotitieToevoegen, _this2.categorieNotitieToevoegen).subscribe(function (data) {
-            console.log(data);
-          });
-
-          _this2.naamNotitieToevoegen = "";
-          _this2.inhoudNotitieToevoegen = "";
-          _this2.categorieNotitieToevoegen = "";
-        };
-
-        this.apiServiceApp = apiService; //this.vulDatabaseMetMockData();
+        this.filterCategorie = "prive";
+        this.apiServiceApp = apiService; //this.vulDatabaseMetMockDataUsers();
+        //this.vulDatabaseMetMockDataCategories();
+        //this.vulDatabaseMetMockDataNotes();
       }
 
       _createClass(AppComponent, [{
         key: "ngOnInit",
-        value: function ngOnInit() {}
-      }, {
-        key: "notitiesVanGebruikerDieZoekStringBevatten",
-        value: function notitiesVanGebruikerDieZoekStringBevatten() {
-          this.notitiesVanGebruikerFilterenOpCategorie(); // this.apiServiceApp.getNotesWithSubstringFromUser(this.actieveGebruiker, this.zoekString).subscribe((data: Notitie[]) => {
-          //   console.log(data);
-          //  this.gevondenNotities = data;
-          // });
-
-          this.zoekString = "";
-        }
-      }, {
-        key: "notitiesVanGebruikerFilterenOpCategorie",
-        value: function notitiesVanGebruikerFilterenOpCategorie() {
-          var _this3 = this;
-
-          this.apiServiceApp.getNotesWithSubstringFromUser(this.actieveGebruiker, this.zoekString, this.filterCategorie).subscribe(function (data) {
-            console.log(data);
-            _this3.gevondenNotitiesFilter = data;
-          });
-        } //nep data om de functies te controleren
+        value: function ngOnInit() {} //nep data om de functies te controleren
 
       }, {
-        key: "vulDatabaseMetMockData",
-        value: function vulDatabaseMetMockData() {
-          //gebruikers toevoegen
+        key: "vulDatabaseMetMockDataUsers",
+        value: function vulDatabaseMetMockDataUsers() {
+          var _this2 = this;
+
           this.apiServiceApp.addUser("Gina").subscribe(function (data) {
             console.log(data);
+
+            _this2.apiServiceApp.getUser("Gina").subscribe(function (data) {
+              _this2.userid = data.id;
+
+              _this2.apiServiceApp.addCategoriesForUser(_this2.userid, "prive").subscribe(function (data) {
+                console.log(data);
+              });
+
+              _this2.apiServiceApp.addCategoriesForUser(_this2.userid, "dringend").subscribe(function (data) {
+                console.log(data);
+              });
+            });
           });
           this.apiServiceApp.addUser("Chantal").subscribe(function (data) {
             console.log(data);
+
+            _this2.apiServiceApp.getUser("Chantal").subscribe(function (data) {
+              _this2.userid = data.id;
+
+              _this2.apiServiceApp.addCategoriesForUser(_this2.userid, "prive").subscribe(function (data) {
+                console.log(data);
+              });
+
+              _this2.apiServiceApp.addCategoriesForUser(_this2.userid, "dringend").subscribe(function (data) {
+                console.log(data);
+              });
+            });
           });
           this.apiServiceApp.addUser("Sonja").subscribe(function (data) {
             console.log(data);
+
+            _this2.apiServiceApp.getUser("Sonja").subscribe(function (data) {
+              _this2.userid = data.id;
+
+              _this2.apiServiceApp.addCategoriesForUser(_this2.userid, "dringend").subscribe(function (data) {
+                console.log(data);
+              });
+            });
           });
           this.apiServiceApp.addUser("Thierry").subscribe(function (data) {
             console.log(data);
           });
           this.apiServiceApp.addUser("Karel").subscribe(function (data) {
             console.log(data);
+
+            _this2.apiServiceApp.getUser("Karel").subscribe(function (data) {
+              _this2.userid = data.id;
+
+              _this2.apiServiceApp.addCategoriesForUser(_this2.userid, "prive").subscribe(function (data) {
+                console.log(data);
+              });
+            });
           });
           this.apiServiceApp.addUser("Tim").subscribe(function (data) {
             console.log(data);
           });
           this.apiServiceApp.addUser("Marie").subscribe(function (data) {
             console.log(data);
+
+            _this2.apiServiceApp.getUser("Marie").subscribe(function (data) {
+              _this2.userid = data.id;
+
+              _this2.apiServiceApp.addCategoriesForUser(_this2.userid, "dringend").subscribe(function (data) {
+                console.log(data);
+              });
+            });
           });
           this.apiServiceApp.addUser("Jonathan").subscribe(function (data) {
             console.log(data);
           });
           this.apiServiceApp.addUser("Ilse").subscribe(function (data) {
             console.log(data);
+
+            _this2.apiServiceApp.getUser("Ilse").subscribe(function (data) {
+              _this2.userid = data.id;
+
+              _this2.apiServiceApp.addCategoriesForUser(_this2.userid, "dringend").subscribe(function (data) {
+                console.log(data);
+              });
+            });
           });
           this.apiServiceApp.addUser("Isabel").subscribe(function (data) {
             console.log(data);
@@ -498,15 +433,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
           this.apiServiceApp.addUser("Tom").subscribe(function (data) {
             console.log(data);
-          }); //categorien toevoegen
 
-          this.apiServiceApp.addCategory("Gina", "prive").subscribe(function (data) {
-            console.log(data);
+            _this2.apiServiceApp.getUser("Tom").subscribe(function (data) {
+              _this2.userid = data.id;
+
+              _this2.apiServiceApp.addCategoriesForUser(_this2.userid, "prive").subscribe(function (data) {
+                console.log(data);
+              });
+            });
           });
-          this.apiServiceApp.addCategory("Gina", "dringend").subscribe(function (data) {
-            console.log(data);
-          }); //notities toevoegen
-
+        }
+      }, {
+        key: "vulDatabaseMetMockDataCategories",
+        value: function vulDatabaseMetMockDataCategories() {}
+      }, {
+        key: "vulDatabaseMetMockDataNotes",
+        value: function vulDatabaseMetMockDataNotes() {
           this.apiServiceApp.addNoteForUser("Gina", "bureau kuisen", "dringend").subscribe(function (data) {
             console.log(data);
           });
@@ -515,15 +457,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
           this.apiServiceApp.addNoteForUser("Gina", "boodschappen doen", "prive").subscribe(function (data) {
             console.log(data);
-          }); //categorien toevoegen
-
-          this.apiServiceApp.addCategory("Chantal", "prive").subscribe(function (data) {
-            console.log(data);
           });
-          this.apiServiceApp.addCategory("Chantal", "dringend").subscribe(function (data) {
-            console.log(data);
-          }); //notities toevoegen
-
           this.apiServiceApp.addNoteForUser("Chantal", "bureau kuisen", "dringend").subscribe(function (data) {
             console.log(data);
           });
@@ -532,47 +466,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
           this.apiServiceApp.addNoteForUser("Chantal", "dochter bellen", "prive").subscribe(function (data) {
             console.log(data);
-          }); //categorien toevoegen
-
-          this.apiServiceApp.addCategory("Sonja", "dringend").subscribe(function (data) {
-            console.log(data);
-          }); //notities toevoegen
-
+          });
           this.apiServiceApp.addNoteForUser("Sonja", "facturen bezorgen", "dringend").subscribe(function (data) {
             console.log(data);
-          }); //categorien toevoegen
-
-          this.apiServiceApp.addCategory("Karel", "prive").subscribe(function (data) {
-            console.log(data);
-          }); //notities toevoegen
-
+          });
           this.apiServiceApp.addNoteForUser("Karel", "personeel beoordelen", "prive").subscribe(function (data) {
             console.log(data);
           });
           this.apiServiceApp.addNoteForUser("Karel", "avondje uit", "prive").subscribe(function (data) {
             console.log(data);
-          }); //categorien toevoegen
-
-          this.apiServiceApp.addCategory("Marie", "dringend").subscribe(function (data) {
-            console.log(data);
-          }); //notities toevoegen
-
+          });
           this.apiServiceApp.addNoteForUser("Marie", "les gaan volgen", "dringend").subscribe(function (data) {
             console.log(data);
-          }); //categorien toevoegen
-
-          this.apiServiceApp.addCategory("Tom", "prive").subscribe(function (data) {
-            console.log(data);
-          }); //notities toevoegen
-
+          });
           this.apiServiceApp.addNoteForUser("Tom", "vrouw bellen", "prive").subscribe(function (data) {
             console.log(data);
-          }); //categorien toevoegen
-
-          this.apiServiceApp.addCategory("Ilse", "dringend").subscribe(function (data) {
-            console.log(data);
-          }); //notities toevoegen
-
+          });
           this.apiServiceApp.addNoteForUser("Ilse", "infobrochure verspreiden", "dringend").subscribe(function (data) {
             console.log(data);
           });
@@ -677,13 +586,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     /* harmony import */
 
 
-    var _login_login_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
-    /*! ./login/login.component */
-    "./src/app/login/login.component.ts");
-    /* harmony import */
-
-
-    var _home_home_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
+    var _home_home_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
     /*! ./home/home.component */
     "./src/app/home/home.component.ts");
 
@@ -705,7 +608,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     (function () {
       (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsetNgModuleScope"](AppModule, {
-        declarations: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"], _login_login_component__WEBPACK_IMPORTED_MODULE_6__["LoginComponent"], _home_home_component__WEBPACK_IMPORTED_MODULE_7__["HomeComponent"]],
+        declarations: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"], _home_home_component__WEBPACK_IMPORTED_MODULE_6__["HomeComponent"]],
         imports: [_app_routing_module__WEBPACK_IMPORTED_MODULE_4__["AppRoutingModule"], _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClientModule"], _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormsModule"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["ReactiveFormsModule"]]
       });
     })();
@@ -716,7 +619,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](AppModule, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"],
         args: [{
-          declarations: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"], _login_login_component__WEBPACK_IMPORTED_MODULE_6__["LoginComponent"], _home_home_component__WEBPACK_IMPORTED_MODULE_7__["HomeComponent"]],
+          declarations: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"], _home_home_component__WEBPACK_IMPORTED_MODULE_6__["HomeComponent"]],
           imports: [_app_routing_module__WEBPACK_IMPORTED_MODULE_4__["AppRoutingModule"], _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClientModule"], _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormsModule"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["ReactiveFormsModule"]],
           providers: [],
           bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"]]
@@ -755,15 +658,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     /* harmony import */
 
 
-    var _angular_forms__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
-    /*! @angular/forms */
-    "./node_modules/@angular/forms/__ivy_ngcc__/fesm2015/forms.js");
+    var _api_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
+    /*! ../api.service */
+    "./src/app/api.service.ts");
     /* harmony import */
 
 
-    var _api_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
-    /*! ../api.service */
-    "./src/app/api.service.ts");
+    var _angular_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
+    /*! @angular/forms */
+    "./node_modules/@angular/forms/__ivy_ngcc__/fesm2015/forms.js");
     /* harmony import */
 
 
@@ -771,43 +674,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     /*! @angular/common */
     "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
 
-    function HomeComponent_div_3_Template(rf, ctx) {
+    function HomeComponent_ng_container_11_Template(rf, ctx) {
       if (rf & 1) {
-        var _r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainer"](0);
+      }
+    }
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    function HomeComponent_ng_template_12_Template(rf, ctx) {}
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "input", 2);
+    function HomeComponent_ng_template_14_Template(rf, ctx) {
+      if (rf & 1) {
+        var _r14 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("change", function HomeComponent_div_3_Template_input_change_1_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](0);
 
-          var category_r2 = ctx.$implicit;
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "br");
 
-          var ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "button", 1);
 
-          return ctx_r3.onChangeCategory(category_r2.description, $event.target.checked);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HomeComponent_ng_template_14_Template_button_click_2_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r14);
+
+          var ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+
+          return ctx_r13.nieuweGebruiker();
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Nieuwe gebruiker");
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
       }
 
       if (rf & 2) {
-        var category_r2 = ctx.$implicit;
+        var ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", category_r2.description, " ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r4.message, " ");
       }
     }
 
-    function HomeComponent_div_6_Template(rf, ctx) {
+    function HomeComponent_option_29_Template(rf, ctx) {
       if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "option", 14);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
 
@@ -815,125 +722,424 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
 
       if (rf & 2) {
-        var note_r5 = ctx.$implicit;
+        var category_r15 = ctx.$implicit;
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpropertyInterpolate"]("value", category_r15.id);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", note_r5, "\n");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](category_r15.description);
+      }
+    }
+
+    function HomeComponent_option_56_Template(rf, ctx) {
+      if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "option", 14);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+      }
+
+      if (rf & 2) {
+        var category_r16 = ctx.$implicit;
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpropertyInterpolate"]("value", category_r16.id);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](category_r16.description);
+      }
+    }
+
+    function HomeComponent_ng_container_62_Template(rf, ctx) {
+      if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainer"](0);
+      }
+    }
+
+    function HomeComponent_ng_template_63_Template(rf, ctx) {
+      if (rf & 1) {
+        var _r18 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 1);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HomeComponent_ng_template_63_Template_button_click_0_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r18);
+
+          var ctx_r17 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+
+          return ctx_r17.NotitieToevoegen();
+        });
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "Notitie toevoegen");
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+      }
+    }
+
+    function HomeComponent_ng_template_65_Template(rf, ctx) {
+      if (rf & 1) {
+        var _r20 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 1);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HomeComponent_ng_template_65_Template_button_click_0_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r20);
+
+          var ctx_r19 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+
+          return ctx_r19.NotitieWijzigen();
+        });
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "Notitie wijzigen");
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+      }
+    }
+
+    function HomeComponent_div_69_Template(rf, ctx) {
+      if (rf & 1) {
+        var _r23 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "input", 15);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "button", 1);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HomeComponent_div_69_Template_button_click_2_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r23);
+
+          var note_r21 = ctx.$implicit;
+
+          var ctx_r22 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+
+          return ctx_r22.NotitieBewerken(note_r21);
+        });
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Notitie bewerken");
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "button", 1);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HomeComponent_div_69_Template_button_click_4_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r23);
+
+          var note_r21 = ctx.$implicit;
+
+          var ctx_r24 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+
+          return ctx_r24.NotitieVerwijderen(note_r21.id);
+        });
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, "Notitie verwijderen");
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+      }
+
+      if (rf & 2) {
+        var note_r21 = ctx.$implicit;
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpropertyInterpolate"]("name", note_r21.id);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpropertyInterpolate"]("value", note_r21.content);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", true);
       }
     }
 
     var HomeComponent =
     /*#__PURE__*/
     function () {
-      function HomeComponent(ApiService, formBuilder) {
+      function HomeComponent(ApiService) {
         _classCallCheck(this, HomeComponent);
 
-        this.formBuilder = formBuilder; //lijst van users in de db
+        //ingelogde gebruiker
+        this.activeUserNames = "Gina";
+        this.loginUserName = this.activeUserNames;
+        this.validUser = false;
+        this.toevoegenNotitie = true;
+        this.selectednotitieCategorie = "-1"; //lijst van gebruikers
 
-        this.users = []; //lijst van notities voor user al dan niet met filter
-
-        this.notes = [];
-        this.notesFilter = [];
-        this.notesNaFilter = []; //lijst van notities voor user al dan niet met filter
+        this.users = []; //lijst van categoriën
 
         this.categories = [];
-        this.geenFilterSelectie = true; //ingelogde user
+        this.categoriesOfUser = []; //lijst van notities
 
-        this.activeUser = "Gina";
-        this.filters = [];
+        this.notesOfUser = [];
+        this.notes = [];
+        this.notesOfUserWithCategoryFilter = [];
+        this.categoryFilter = "-1";
+        this.filterAan = false;
+        this.notesMetCategorieFilter = [];
+        this.content = "";
+        this.categorieNotitie = "-1";
+        this.substring = "";
+        this.notesMetSubstring = []; //moeten van invoervelden komen:
+
+        this.addUser_userName = "Tina";
+        this.addCategoriesForUser_description = "test1";
+        this.deleteCategorie_idOfUser = 10;
+        this.addCategorie_idOfUser = 1;
+        this.contentNieuweNotitie = "nieuwe notitie van Gina met cat 6";
         this.apiService = ApiService;
       }
 
       _createClass(HomeComponent, [{
-        key: "onChangeCategory",
-        value: function onChangeCategory(description, isChecked) {
-          var categories = this.formCategory.controls.description;
+        key: "inloggen",
+        value: function inloggen() {
+          var _this3 = this;
 
-          if (isChecked) {
-            categories.push(new _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormControl"](description));
-          } else {
-            var index = categories.controls.findIndex(function (x) {
-              return x.value === description;
-            });
-            categories.removeAt(index);
-          }
-        }
-      }, {
-        key: "onChangeNote",
-        value: function onChangeNote(content, isChecked) {
-          var notes = this.formNote.controls.content;
+          //gebruiker ophalen
+          this.apiService.getUser(this.loginUserName).subscribe(function (data) {
+            console.log(data);
+            _this3.loginUser = data;
 
-          if (isChecked) {
-            notes.push(new _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormControl"](content));
-          } else {
-            var index = notes.controls.findIndex(function (x) {
-              return x.value === content;
-            });
-            notes.removeAt(index);
-          }
-        }
-      }, {
-        key: "ngOnInit",
-        value: function ngOnInit() {
-          this.OphalenCategorien();
-          this.OphalenNotities(); //Catergorie
-
-          this.formCategory = this.formBuilder.group({
-            description: this.formBuilder.array([])
-          }); //Notities
-
-          this.formNote = this.formBuilder.group({
-            content: this.formBuilder.array([])
+            if (_this3.loginUser.name === undefined) {
+              _this3.validUser = false;
+              _this3.message = "Gebruiker " + _this3.loginUserName + " is niet gekend!";
+              return;
+            } else {
+              _this3.validUser = true;
+              _this3.message = "Welkom " + _this3.loginUser.name + ", met id " + _this3.loginUser.id;
+            }
+          });
+          this.apiService.getCategoriesOfUser(this.loginUser.id).subscribe(function (data) {
+            console.log(data);
+            _this3.categoriesOfUser = data;
+          });
+          this.apiService.getNotesOfUser(this.loginUser.id).subscribe(function (data) {
+            console.log(data);
+            _this3.notesOfUser = data;
+            _this3.notes = data;
           });
         }
       }, {
-        key: "submitCategory",
-        value: function submitCategory() {
+        key: "nieuweGebruiker",
+        value: function nieuweGebruiker() {
+          alert("aanmelden");
+        }
+      }, {
+        key: "filterCategory",
+        value: function filterCategory(event) {
+          this.categoryFilter = event.target.value;
+        }
+      }, {
+        key: "filterCategoryToepassen",
+        value: function filterCategoryToepassen() {
           var _this4 = this;
 
-          this.notesNaFilter = [];
-          this.filters = this.formCategory.value.description;
-          this.OphalenNotitie(this.filters);
-          this.notesFilter.forEach(function (note) {
-            _this4.notesNaFilter.push(note.content);
+          if (this.filterAan) {
+            this.notes = this.notesOfUser;
+          }
+
+          if (this.categoryFilter == "-1") {
+            this.filterAan = false;
+            return;
+          }
+
+          this.notes.forEach(function (note) {
+            if (note.categoryId == Number(_this4.categoryFilter)) {
+              _this4.notesMetCategorieFilter.push(note);
+            }
           });
-          console.log(this.formCategory.value.description);
+          this.notes = this.notesMetCategorieFilter;
+          this.filterAan = true;
+          this.notesMetCategorieFilter = [];
         }
       }, {
-        key: "submitNote",
-        value: function submitNote() {
-          console.log(this.formNote.value.content);
+        key: "Notitiecategory",
+        value: function Notitiecategory(event) {
+          this.categorieNotitie = event.target.value;
         }
       }, {
-        key: "OphalenCategorien",
-        value: function OphalenCategorien() {
+        key: "NotitieToevoegen",
+        value: function NotitieToevoegen() {
           var _this5 = this;
 
-          this.apiService.getCategoriesFromUser(this.activeUser).subscribe(function (data) {
+          if (this.categorieNotitie == "-1") {
+            alert("U koos geen categorie");
+            return;
+          }
+
+          this.apiService.getNotesOfUser(this.loginUser.id).subscribe(function (data) {
             console.log(data);
-            _this5.categories = data;
+
+            _this5.apiService.addNoteForUser(_this5.loginUser.id, _this5.categorieNotitie, _this5.content).subscribe(function (data) {
+              console.log(data);
+            });
+
+            _this5.notesOfUser = data;
           });
         }
       }, {
-        key: "OphalenNotities",
-        value: function OphalenNotities() {
+        key: "NotitiesMetZoekstringZoeken",
+        value: function NotitiesMetZoekstringZoeken() {
           var _this6 = this;
 
-          this.apiService.getNotesFromUser(this.activeUser, "", "").subscribe(function (data) {
+          this.notes.forEach(function (note) {
+            if (note.content.includes(_this6.substring)) {
+              _this6.notesMetSubstring.push(note);
+            }
+          });
+          this.notes = this.notesMetSubstring;
+          this.substring = "";
+          this.notesMetSubstring = [];
+        }
+      }, {
+        key: "NotitieBewerken",
+        value: function NotitieBewerken(note) {
+          this.toevoegenNotitie = false;
+          this.content = note.content;
+          this.selectednotitieCategorie = note.categoryId;
+        }
+      }, {
+        key: "NotitieWijzigen",
+        value: function NotitieWijzigen() {
+          alert(this.categorieNotitie);
+          this.toevoegenNotitie = true;
+        }
+      }, {
+        key: "NotitieVerwijderen",
+        value: function NotitieVerwijderen(noteId) {
+          var _this7 = this;
+
+          this.apiService.getNotesOfUser(this.loginUser.id).subscribe(function (data) {
             console.log(data);
-            _this6.notes = data;
+
+            _this7.apiService.delNoteOfUser(noteId).subscribe(function (data) {
+              console.log(data);
+            });
+
+            _this7.notesOfUser = data;
+          });
+        } //apiservice
+        //gebruikers ophalen
+
+      }, {
+        key: "getUsers",
+        value: function getUsers() {
+          var _this8 = this;
+
+          this.apiService.getUsers().subscribe(function (data) {
+            console.log(data);
+            _this8.users = data;
           });
         }
       }, {
-        key: "OphalenNotitie",
-        value: function OphalenNotitie(filter) {
-          var _this7 = this;
+        key: "getUser",
+        value: function getUser(userName) {
+          var _this9 = this;
 
-          this.apiService.getNotesFromUser(this.activeUser, "", filter).subscribe(function (data) {
-            //console.log(data);   
-            _this7.notesFilter = data;
+          this.apiService.getUser(userName).subscribe(function (data) {
+            console.log(data);
+            _this9.loginUser = data; // this.loginUserId = data.id;
+            // this.loginUserName = data.name;
           });
+        } //gebruiker toevoegen
+
+      }, {
+        key: "addUser",
+        value: function addUser() {
+          this.apiService.addUser(this.addUser_userName).subscribe(function (data) {
+            console.log(data);
+          });
+        } //gebruiker verwijderen
+
+      }, {
+        key: "delUser",
+        value: function delUser() {
+          this.apiService.delUser(this.loginUserId).subscribe(function (data) {
+            console.log(data);
+          });
+        } //categoriën
+        //catergoriën ophalen
+
+      }, {
+        key: "getCategories",
+        value: function getCategories() {
+          var _this10 = this;
+
+          this.apiService.getCategories().subscribe(function (data) {
+            console.log(data);
+            _this10.categories = data;
+          });
+        } //categoriën van de actieve gebruiker ophalen
+
+      }, {
+        key: "getCategoriesOfUser",
+        value: function getCategoriesOfUser(userId) {
+          var _this11 = this;
+
+          this.apiService.getCategoriesOfUser(userId).subscribe(function (data) {
+            console.log(data);
+            _this11.categoriesOfUser = data;
+          });
+        } //categorie voor de actieve gebruiker toevoegen
+
+      }, {
+        key: "addCategoriesForUser",
+        value: function addCategoriesForUser() {
+          this.apiService.addCategoriesForUser(this.loginUserId, this.addCategoriesForUser_description).subscribe(function (data) {
+            console.log(data);
+          });
+        } //categoriën van de actieve gebruiker verwijderen en dus ook de bijhorende notities
+
+      }, {
+        key: "deleteCategoriesOfUser",
+        value: function deleteCategoriesOfUser() {
+          this.apiService.delCategoriesOfUser(this.deleteCategorie_idOfUser).subscribe(function (data) {
+            console.log(data);
+          });
+        } //notities
+
+      }, {
+        key: "getNotes",
+        value: function getNotes() {
+          var _this12 = this;
+
+          this.apiService.getNotes().subscribe(function (data) {
+            console.log(data);
+            _this12.notes = data;
+          });
+        }
+      }, {
+        key: "getNotesOfUser",
+        value: function getNotesOfUser(userId) {
+          var _this13 = this;
+
+          this.apiService.getNotesOfUser(userId).subscribe(function (data) {
+            console.log(data);
+            _this13.notesOfUser = data;
+          });
+        }
+      }, {
+        key: "addNoteForUser",
+        value: function addNoteForUser(userId, categoryId, content) {
+          this.apiService.addNoteForUser(userId, categoryId, content).subscribe(function (data) {
+            console.log(data);
+          });
+        } //opgekuisd
+
+      }, {
+        key: "ngOnInit",
+        value: function ngOnInit() {// this.getUser();
+          // this.getCategories();
+          // this.getNotes();
+          // //Catergorie
+          // this.formCategory = this.formBuilder.group({
+          //   description: this.formBuilder.array([])
+          // });
+          // //Notities
+          // this.formNote = this.formBuilder.group({
+          //   content: this.formBuilder.array([])
+          // });
         }
       }]);
 
@@ -941,61 +1147,313 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }();
 
     HomeComponent.ɵfac = function HomeComponent_Factory(t) {
-      return new (t || HomeComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_api_service__WEBPACK_IMPORTED_MODULE_2__["APIService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormBuilder"]));
+      return new (t || HomeComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_api_service__WEBPACK_IMPORTED_MODULE_1__["APIService"]));
     };
 
     HomeComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
       type: HomeComponent,
       selectors: [["app-home"]],
-      decls: 7,
-      vars: 4,
-      consts: [[3, "formGroup", "ngSubmit"], [4, "ngFor", "ngForOf"], ["type", "checkbox", 3, "change"]],
+      decls: 70,
+      vars: 14,
+      consts: [["type", "text", 3, "ngModel", "ngModelChange"], [3, "click"], [4, "ngIf", "ngIfThen", "ngIfElse"], ["activeUserContent", ""], ["newUserContent", ""], [3, "change"], ["value", "-1"], [3, "value", 4, "ngFor", "ngForOf"], [3, "ngModel", "ngModelChange"], [3, "ngModel", "ngModelChange", "change"], ["buttonToevoegen", ""], ["buttonWijzigen", ""], ["colspan", "3"], [4, "ngFor", "ngForOf"], [3, "value"], ["type", "text", 3, "name", "disabled", "value"]],
       template: function HomeComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "h1");
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "Welkom, gelieve uw gebruikersnaam op te geven");
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "form", 0);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngSubmit", function HomeComponent_Template_form_ngSubmit_2_listener() {
-            return ctx.submitCategory();
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "br");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "br");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "input", 0);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function HomeComponent_Template_input_ngModelChange_5_listener($event) {
+            return ctx.loginUserName = $event;
           });
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, HomeComponent_div_3_Template, 3, 1, "div", 1);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "button");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "button", 1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, "Filter toepassen");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HomeComponent_Template_button_click_6_listener() {
+            return ctx.inloggen();
+          });
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7, "Notities weergeven");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "br");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](9, "br");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "div");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](11, HomeComponent_ng_container_11_Template, 1, 0, "ng-container", 2);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](12, HomeComponent_ng_template_12_Template, 0, 0, "ng-template", null, 3, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplateRefExtractor"]);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](14, HomeComponent_ng_template_14_Template, 4, 1, "ng-template", null, 4, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplateRefExtractor"]);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "table");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "table");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](22, "hr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](23, "filteren op categorie:");
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, HomeComponent_div_6_Template, 2, 1, "div", 1);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "select", 5);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("change", function HomeComponent_Template_select_change_26_listener($event) {
+            return ctx.filterCategory($event);
+          });
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "option", 6);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](28, "--- Kies een categorie ---");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](29, HomeComponent_option_29_Template, 2, 2, "option", 7);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](32, "button", 1);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HomeComponent_Template_button_click_32_listener() {
+            return ctx.filterCategoryToepassen();
+          });
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](33, "Filter toepassen");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](34, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](35, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](36, "hr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](37, "Zoeken op content:");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](38, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](39, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](40, "input", 8);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function HomeComponent_Template_input_ngModelChange_40_listener($event) {
+            return ctx.substring = $event;
+          });
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](41, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](42, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](43, "button", 1);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HomeComponent_Template_button_click_43_listener() {
+            return ctx.NotitiesMetZoekstringZoeken();
+          });
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](44, "Notities zoeken");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](45, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](46, "table");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](47, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](48, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](49, "Notitie toevoegen");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](50, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](51, "input", 8);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function HomeComponent_Template_input_ngModelChange_51_listener($event) {
+            return ctx.content = $event;
+          });
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](52, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](53, "select", 9);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function HomeComponent_Template_select_ngModelChange_53_listener($event) {
+            return ctx.selectednotitieCategorie = $event;
+          })("change", function HomeComponent_Template_select_change_53_listener($event) {
+            return ctx.Notitiecategory($event);
+          });
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](54, "option", 6);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](55, "--- Kies een categorie ---");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](56, HomeComponent_option_56_Template, 2, 2, "option", 7);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](57, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](58, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](59, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](60, "td");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](61, "div");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](62, HomeComponent_ng_container_62_Template, 1, 0, "ng-container", 2);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](63, HomeComponent_ng_template_63_Template, 2, 0, "ng-template", null, 10, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplateRefExtractor"]);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](65, HomeComponent_ng_template_65_Template, 2, 0, "ng-template", null, 11, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplateRefExtractor"]);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](67, "tr");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](68, "td", 12);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](69, HomeComponent_div_69_Template, 6, 3, "div", 13);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         }
 
         if (rf & 2) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+          var _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](13);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("Welkom ", ctx.activeUser, "");
+          var _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](15);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+          var _r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](64);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("formGroup", ctx.formCategory);
+          var _r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](66);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.categories);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.message, " ");
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.notesNaFilter);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.loginUserName);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.validUser)("ngIfThen", _r1)("ngIfElse", _r3);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](18);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.categoriesOfUser);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](11);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.substring);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](11);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.content);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.selectednotitieCategorie);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.categoriesOfUser);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.toevoegenNotitie)("ngIfThen", _r8)("ngIfElse", _r10);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.notes);
         }
       },
-      directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormGroupDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgForOf"]],
+      directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["NgModel"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgIf"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["NgSelectOption"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["ɵangular_packages_forms_forms_x"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgForOf"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["SelectControlValueAccessor"]],
       styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2hvbWUvaG9tZS5jb21wb25lbnQuY3NzIn0= */"]
     });
     /*@__PURE__*/
@@ -1010,168 +1468,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }]
       }], function () {
         return [{
-          type: _api_service__WEBPACK_IMPORTED_MODULE_2__["APIService"]
-        }, {
-          type: _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormBuilder"]
-        }];
-      }, null);
-    })();
-    /***/
-
-  },
-
-  /***/
-  "./src/app/login/login.component.ts":
-  /*!******************************************!*\
-    !*** ./src/app/login/login.component.ts ***!
-    \******************************************/
-
-  /*! exports provided: LoginComponent */
-
-  /***/
-  function srcAppLoginLoginComponentTs(module, __webpack_exports__, __webpack_require__) {
-    "use strict";
-
-    __webpack_require__.r(__webpack_exports__);
-    /* harmony export (binding) */
-
-
-    __webpack_require__.d(__webpack_exports__, "LoginComponent", function () {
-      return LoginComponent;
-    });
-    /* harmony import */
-
-
-    var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
-    /*! @angular/core */
-    "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-    /* harmony import */
-
-
-    var _api_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
-    /*! ../api.service */
-    "./src/app/api.service.ts");
-    /* harmony import */
-
-
-    var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
-    /*! @angular/router */
-    "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js"); //<!--
-    //
-    //
-    //hierboven code om de dbconnectie te testen
-    //
-    //
-    //-->
-
-
-    var LoginComponent =
-    /*#__PURE__*/
-    function () {
-      function LoginComponent(apiService, router) {
-        var _this8 = this;
-
-        _classCallCheck(this, LoginComponent);
-
-        this.apiService = apiService;
-        this.router = router;
-        this.geldigeGebruiker = "";
-        this.gebruikersnaam = "Tom"; //<!--
-        //
-        //
-        //hieronder code om de dbconnectie te testen
-        //
-        //
-        //-->
-
-        this.gebruikers = [];
-
-        this.lijstGebruikers = function () {
-          _this8.apiServiceApp.getUsers().subscribe(function (data) {
-            console.log(data);
-            _this8.gebruikers = data;
-          });
-        };
-
-        this.apiServiceApp = apiService;
-      }
-
-      _createClass(LoginComponent, [{
-        key: "ngOnInit",
-        value: function ngOnInit() {} //checkt of een gebruiker reeds bestaat
-
-      }, {
-        key: "IsGeldigeGebruiker",
-        value: function IsGeldigeGebruiker() {
-          var _this9 = this;
-
-          this.apiServiceApp.getUser(this.gebruikersnaam).subscribe(function (data) {
-            alert("log");
-            console.log(data);
-
-            if (data.error == null) {
-              alert("if");
-              _this9.geldigeGebruiker = data.success;
-            } else {
-              alert("else");
-              _this9.geldigeGebruiker = data.error;
-            }
-
-            alert(_this9.geldigeGebruiker);
-          });
-          alert("we zijn hier");
-        }
-      }, {
-        key: "Inloggen",
-        value: function Inloggen(geldigeGebruiker) {
-          if (geldigeGebruiker) {
-            alert("we zijn er");
-            this.router.navigate(["/home"]);
-          } else {
-            //boodschap dat de gebruiker niet bestaat
-            alert(this.gebruikersnaam + "is niet gekend");
-          }
-        }
-      }]);
-
-      return LoginComponent;
-    }();
-
-    LoginComponent.ɵfac = function LoginComponent_Factory(t) {
-      return new (t || LoginComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_api_service__WEBPACK_IMPORTED_MODULE_1__["APIService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"]));
-    };
-
-    LoginComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
-      type: LoginComponent,
-      selectors: [["app-login"]],
-      decls: 2,
-      vars: 0,
-      template: function LoginComponent_Template(rf, ctx) {
-        if (rf & 1) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "h1");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "loginpage");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        }
-      },
-      styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2xvZ2luL2xvZ2luLmNvbXBvbmVudC5jc3MifQ== */"]
-    });
-    /*@__PURE__*/
-
-    (function () {
-      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](LoginComponent, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
-        args: [{
-          selector: 'app-login',
-          templateUrl: './login.component.html',
-          styleUrls: ['./login.component.css']
-        }]
-      }], function () {
-        return [{
           type: _api_service__WEBPACK_IMPORTED_MODULE_1__["APIService"]
-        }, {
-          type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"]
         }];
       }, null);
     })();
