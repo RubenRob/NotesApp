@@ -11,7 +11,7 @@ interface Note {
   id: number;
   content: string;
   userId: number;
-  noteCategoryId: number;
+  categoryId: number;
 }
 interface Category {
   id: number;
@@ -30,30 +30,27 @@ export class HomeComponent implements OnInit {
   private apiService: APIService;
     
     //ingelogde gebruiker
+    activeUserNames = "Gina";
+
+
     loginUser: User;
-    activeUserName="Gina";
-    loginUserId;//loginUser.id;
-    loginUserName = this.activeUserName;//loginUser.name;
+    loginUserName= this.activeUserNames;
+    loginUserId;
     validUser: boolean = false;
     message;
-    //moeten van invoervelden komen:
-    addUser_userName = "Tina";
-    addCategoriesForUser_description= "test1";
-    deleteCategorie_idOfUser: number = 10;
-    addCategorie_idOfUser:number = 1;
-    contentNieuweNotitie:string = "nieuwe notitie van Gina met cat 6"
-    //opkuisen
-
+    toevoegenNotitie= true;
+    selectednotitieCategorie="-1";
     //lijst van gebruikers
     users: User[] = [];
     //lijst van categoriën
     categories: Category[] = [];
     categoriesOfUser: Category[] = [];
     //lijst van notities
-    notes: Note[] = [];
     notesOfUser: Note[] = [];
+    notes: Note[] = [];
+    notesOfUserWithCategoryFilter: Note[] = [];
 
-  constructor(ApiService: APIService, private formBuilder: FormBuilder) {
+  constructor(ApiService: APIService) {
     this.apiService = ApiService;
   } 
 
@@ -72,19 +69,100 @@ export class HomeComponent implements OnInit {
           this.message= "Welkom " + this.loginUser.name +", met id "+ this.loginUser.id;
         }
   })
+  this.apiService.getCategoriesOfUser(this.loginUser.id).subscribe((data: Category[]) => {
+    console.log(data);
+    this.categoriesOfUser = data;
+  })
+  this.apiService.getNotesOfUser(this.loginUser.id).subscribe((data: Note[]) => {
+    console.log(data);
+    this.notesOfUser = data;
+    this.notes=data;
+  })
 }
-
-  nieuweGebruiker() {
-    alert("aanmelden");
-  }
-
+nieuweGebruiker() {
+  alert("aanmelden");
+}
+  
+  categoryFilter="-1";
+  filterAan=false;
+  notesMetCategorieFilter: Note[]=[];
   filterCategory(event){
-    alert(event);
-  }
-  filterCategoryToepassen(){
-    alert("toepassen");
+    this.categoryFilter= event.target.value;
   }
 
+  filterCategoryToepassen(){
+      if(this.filterAan) {
+        this.notes= this.notesOfUser;
+      }
+      if(this.categoryFilter == "-1") {
+        this.filterAan=false;
+        return;
+      }
+      this.notes.forEach(note => {
+        if(note.categoryId == Number(this.categoryFilter)) {
+          this.notesMetCategorieFilter.push(note);
+        }
+      });
+      this.notes=this.notesMetCategorieFilter;
+      this.filterAan=true;
+      this.notesMetCategorieFilter=[];
+  }
+  content="";
+  categorieNotitie="-1";
+  Notitiecategory(event){
+    this.categorieNotitie= event.target.value;
+  }
+  NotitieToevoegen(){
+    if(this.categorieNotitie == "-1") {
+      alert("U koos geen categorie");
+      return;
+    }
+      this.apiService.getNotesOfUser(this.loginUser.id).subscribe((data: Note[]) => {
+        console.log(data);
+        this.apiService.addNoteForUser(this.loginUser.id, this.categorieNotitie, this.content).subscribe((data) => {
+          console.log(data);
+        })
+        this.notesOfUser = data;
+      })
+    }
+
+    substring="";
+    notesMetSubstring: Note[]=[];
+    NotitiesMetZoekstringZoeken() {
+      this.notes.forEach(note => {
+        if(note.content.includes(this.substring)) {
+          this.notesMetSubstring.push(note);
+        }
+      });
+      this.notes=this.notesMetSubstring;
+      this.substring="";
+      this.notesMetSubstring=[];
+    }
+    NotitieBewerken(note) {
+      this.toevoegenNotitie=false;
+      this.content=note.content;
+      this.selectednotitieCategorie= note.categoryId;
+    }
+    NotitieWijzigen() {
+      alert(this.categorieNotitie);
+      this.toevoegenNotitie=true;
+    }
+    NotitieVerwijderen(noteId) {
+      this.apiService.getNotesOfUser(this.loginUser.id).subscribe((data: Note[]) => {
+        console.log(data);
+        this.apiService.delNoteOfUser(noteId).subscribe((data) => {
+          console.log(data);
+        })
+        this.notesOfUser = data;
+      })
+    }
+
+//moeten van invoervelden komen:
+addUser_userName = "Tina";
+addCategoriesForUser_description= "test1";
+deleteCategorie_idOfUser: number = 10;
+addCategorie_idOfUser:number = 1;
+contentNieuweNotitie:string = "nieuwe notitie van Gina met cat 6"
   //apiservice
     //gebruikers ophalen
   getUsers() {
@@ -148,14 +226,14 @@ export class HomeComponent implements OnInit {
       this.notes = data;
     })
   }
-  getNotesOfUser() {
-    this.apiService.getNotesOfUser(this.loginUserId).subscribe((data: Note[]) => {
+  getNotesOfUser(userId) {
+    this.apiService.getNotesOfUser(userId).subscribe((data: Note[]) => {
       console.log(data);
       this.notesOfUser = data;
     })
   }
-  addNoteForUser() {
-    this.apiService.addNoteForUser(this.loginUserId, this.addCategorie_idOfUser,this.contentNieuweNotitie).subscribe((data) => {
+  addNoteForUser(userId, categoryId, content) {
+    this.apiService.addNoteForUser(userId, categoryId,content).subscribe((data) => {
       console.log(data);
     })
   }

@@ -13,7 +13,7 @@
   </ng-container>
   
   <ng-template #activeUserContent>
-    <app-user [loginUser] = "loginUser"></app-user>
+   <!--<app-user [loginUser] = "loginUser">hey</app-user>--> 
   </ng-template>
 
   <ng-template #newUserContent>
@@ -22,7 +22,84 @@
     <button (click)="nieuweGebruiker()">Nieuwe gebruiker</button>
   </ng-template>
   
+  <table>
+    <tr>
+      <td>
+        <table>
+          <tr>
+            <td><hr>filteren op categorie:</td>
+          </tr>
+          <tr>
+            <td>
+              <select (change)="filterCategory($event)">
+                <option value=-1 >--- Kies een categorie ---</option>
+                <option  *ngFor="let category of categoriesOfUser" value={{category.id}}>{{ category.description }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><button (click)="filterCategoryToepassen()">Filter toepassen</button></td>
+          </tr>  
+          
+          <tr>
+            <td><hr>Zoeken op content:</td>
+          </tr>
+          <tr>
+            <td>
+              <input [(ngModel)]="substring"/>
+            </td>
+          </tr>
+          <tr>
+            <td><button (click)="NotitiesMetZoekstringZoeken()">Notities zoeken</button></td>
+          </tr>      
+        </table>
+      </td>
+      <td>
+        <table>
+          <tr>
+            <td>Notitie toevoegen</td>
+            <td>
+              <input [(ngModel)]="content"/>
+            </td>
+            <td>
+              <select [(ngModel)]="selectednotitieCategorie" (change)="Notitiecategory($event)">
+                <option value="-1" >--- Kies een categorie ---</option>
+                <option  *ngFor="let category of categoriesOfUser" value={{category.id}}>{{ category.description }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td>
+              <div>  
+                <ng-container *ngIf="toevoegenNotitie;then buttonToevoegen;else buttonWijzigen">
+                </ng-container>
+                <ng-template #buttonToevoegen>
+                  <button (click)="NotitieToevoegen()">Notitie toevoegen</button>
+                </ng-template>
+                <ng-template #buttonWijzigen>
+                  <button (click)="NotitieWijzigen()">Notitie wijzigen</button>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <div *ngFor="let note of notes">
+                <input type="text" name={{note.id}} [disabled]= true value="{{note.content}}"/>
+                <button (click)="NotitieBewerken(note)">Notitie bewerken</button>
+                <button (click)="NotitieVerwijderen(note.id)">Notitie verwijderen</button>
+              </div></td>
+          </tr>
+        </table>   
+      </td>
 
+    </tr>
+  </table>
+  
+
+<!-- 
 </div>
 <br>
 <br>
@@ -30,7 +107,7 @@ Users
 <br>
 <br>
 <button (click)="getUsers()">Lijst gebruikers</button>
-<!--<button (click)="getUser(naam)">Id gebruiker</button>-->
+<button (click)="getUser(naam)">Id gebruiker</button>
 <button (click)="addUser()">Gebruikers toevoegen</button>
 <button (click)="delUser()">Verwijder gebruiker</button>
 <br>
@@ -38,7 +115,7 @@ Users
 categories <br>
 <br>
 <button (click)="getCategories()">Lijst categoriën</button>
-<!--<button (click)="getCategoriesOfUser(loginUser.id )">Lijst categoriën van {{loginUser.name}}</button>-->
+<button (click)="getCategoriesOfUser(loginUser.id )">Lijst categoriën van {{loginUser.name}}</button>
 <button (click)="addCategoriesForUser()">Categorie toevoegen</button>
 <button (click)="deleteCategoriesOfUser()">Verwijder Categorie</button>
 <br>
@@ -46,10 +123,9 @@ categories <br>
 Notes <br>
 <br>
 <button (click)="getNotes()">Lijst notities</button>
-<!--<button (click)="getNotesOfUser()">Lijst notities van {{loginUser.name}}</button>-->
-<button (click)="addNoteForUser()">Notitie  toevoegen</button>
+<button (click)="getNotesOfUser()">Lijst notities van {{loginUser.name}}</button>
+<button (click)="addNoteForUser()">Notitie  toevoegen</button> -->
 
- 
 
 
 <!-- <table>

@@ -67,9 +67,17 @@ export class APIService {
   getNotesOfUser = (userId: number) => {
     return this.http.get(this.route + "/users/"+userId+"/notes");
   }
+  //haal de lijst van alle notities van een gebruiker op
+  getNotesOfUserWithCategoryFilter = (userId: number, categoryId: string) => {
+    return this.http.get(this.route + "/users/"+userId+"/categories/"+categoryId+"/notes");
+  }
   //voeg een notitie toe voor een bepaalde gebruiker
-  addNoteForUser = ( userId: number, categoryId: number, content: string) => {
+  addNoteForUser = ( userId: number, categoryId: string, content: string) => {
     return this.http.post(this.route + "/users/"+userId+"/categories/"+categoryId+"/notes", {content: content});
+  }
+  //voeg een notitie toe voor een bepaalde gebruiker
+  delNoteOfUser = ( noteId: number) => {
+    return this.http.delete(this.route + "/notes?noteId=" + noteId);
   }
 
 }
