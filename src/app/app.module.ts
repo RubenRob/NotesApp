@@ -11,7 +11,6 @@ import { ColorPickerModule  } from 'ngx-color-picker';
 import { AppComponent } from './app.component';
 
 import { HomeComponent } from './home/home.component';
-import { NotesComponent } from './notes/notes.component';
 
 
 
@@ -19,7 +18,6 @@ import { NotesComponent } from './notes/notes.component';
   declarations: [
     AppComponent,
     HomeComponent,
-    NotesComponent,
   ],
   imports: [
     AppRoutingModule,

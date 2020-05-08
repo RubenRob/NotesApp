@@ -13,7 +13,7 @@
   <!-- gebruiker is nog niet ingelogd -->
   <ng-template #loginContent>
     <h4>{{message1}}</h4>
-    <label>Gebruikersnaam</label>
+    <label>gebruikersnaam</label>
     <br>
     <input style="width: 196px" type="text" [(ngModel)]="loginUserName"/>
     <br>
@@ -34,12 +34,13 @@
         <label>gebruikersnaam</label>
         <br>
         <input  style="width: 196px" type="text" [(ngModel)]="newUserName"/>
+        <br>
         <button  style="width: 200px"(click)="addUser()">account aanmaken</button>
       </ng-template>
     </div>
   </ng-template>
   
-  <!-- userscherm -->
+   <!-- userscherm -->
   <!-- gebruiker is ingelogd -->
   <ng-template #activeUserContent>
     <table>
@@ -56,8 +57,6 @@
                 <!-- geen nieuwe notitie aanmaken -->
                 <ng-template #noNewNote>
                   <button style="width: 200px" (click)="setAddNoteClicked(true)" [disabled]="categoriesOfUser.length==0">nieuwe notitie aanmaken</button>
-                  <button style="width: 200px" (click)="setChangeNoteClicked(true)" [disabled]="notesOfUser.length==0">notitie bewerken</button>
-                  <button style="width: 200px" (click)="deleteNote()" [disabled]="notesOfUser.length==0">notitie verwijderen</button>
                 </ng-template>
                 
                 <!-- wel nieuwe notitie aanmaken -->
@@ -178,8 +177,12 @@
               <ng-template #notesToShow> 
                 <label>Klik op de notitie die u wenst te bewerken of verwijderen</label>
                 <div *ngFor="let note of notes" >
-                <button [ngStyle]="{'background-color':getColor(note)}" style="width: 500px" (click)="onNoteClick(note)">{{note.content}}</button>      
-                {{messageSelectedNote}}
+                  <button [ngStyle]="{'background-color':getColor(note)}" style="width: 500px" (click)="onNoteClick(note)">{{note.content}}</button>    
+                  <!--bij geselecteerd item buttons bewerken en verwijderen weergeven--> 
+                    <div *ngIf="selectedNote == note">
+                    <button *ngIf="selectedNote == note" style="width: 200px" (click)="setChangeNoteClicked(true)" [disabled]="notesOfUser.length==0">notitie bewerken</button>
+                    <button *ngIf="selectedNote == note" style="width: 200px" (click)="deleteNote()" [disabled]="notesOfUser.length==0">notitie verwijderen</button>
+                    </div>
                 </div>
               </ng-template>
                <!--als de lijst leeg is-->
@@ -193,7 +196,6 @@
         </td>
       </tr>        
     </table>
-   <!-- <app-notes [loginUser] = "loginUser"></app-notes> -->
   </ng-template>
   <!-- loginscherm -->
   

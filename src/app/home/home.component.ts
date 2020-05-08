@@ -1,8 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { APIService } from '../api.service';
-import { ColorFormats } from 'ngx-color-picker/lib/formats';
 
 interface User {
   id: number;
@@ -38,7 +36,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
   }
 
-  //info strartscherm
+  //messages
   message0: string = "Welkom bij notesApp";
   message1: string = "Geef uw gebruikersnaam in om in te loggen.";
   message2: string = "Nieuwe gebruiker?  Maak een account aan.";
@@ -46,24 +44,44 @@ export class HomeComponent implements OnInit {
   message4: string = "In welke kleur wilt u de categorie weergeven";
   message5: string = "Vul hier uw notitie in";
   message6: string = "Kies uw notitiecategorie";
-  loginUserName: string = "Emiel";
+  loginUserName: string = "";
   //userExists is false wanneer loginUserName niet gekend is
   userExists: boolean = false;
   //gebruiker met naam loginUserName
   activeUser: User;
   //categoriën van gebruiker
   categoriesOfUser: Category[] = [];
-  //categoryListEmpty: boolean = true;
+  //notities van gebruiker
+  notesOfUser: Note[] = [];
+  //lijst van weer te geven notities
+  notes: Note[] = [];
+  //variabelen voor specifieke functies
   //geselecteerde categorie staat standaard op -1: --- kies een categorie ---
   selectedFilterCategoryFilter: number = -1;
   //geselecteerde categorie staat standaard op -1: --- kies een categorie ---
   selectedNotesCategory: number = -1;
   //kleurlijst weergave categoriën
   categoryColor;
-  //notities van gebruiker
-  notesOfUser: Note[] = [];
-  //lijst van weer te geven notities
-  notes: Note[] = [];
+  //velden voor de nieuwe notitie weergeven
+  addNoteClicked: boolean = false;
+  noteContent: string = "";
+  //velden voor de nieuwe account weergeven
+  addUserClicked: boolean = false;
+  newUserName: string = "";
+  //velden nieuwe categorie weergeven
+  addcategoryClicked: boolean = false;
+  categoryDescriptionNew: string = "";
+  //geselecteerde notitie om te bewerken of te verwijderen
+  messageSelectedNote: string = "deze notitie kan worden bewerkt of verwijderd"
+  selectedNote: Note;
+  changeNoteClicked: boolean = false;
+  //haal de kleur van de categorie op
+  colorCategorie: string = "";
+  //filter toepassen
+  filterOn=false;
+  filteredNotes: Note[]=[];
+  substring: string = "";
+  notesWithSubstring: Note[]=[];
 
   //controleer of de ingegeven naam bestaat en ga de gegevens van die gebruiker ophalen  
   getUser() {
@@ -110,8 +128,6 @@ export class HomeComponent implements OnInit {
   }
   
   //velden voor de nieuwe account weergeven
-  addUserClicked: boolean = false;
-  newUserName: string = "";
   addUserShowInputField(){
     this.addUserClicked = true;
     this.newUserName = this.loginUserName;
@@ -135,33 +151,63 @@ export class HomeComponent implements OnInit {
     })
   }
   logOff(){
-    this.message0 = "Welkom bij notesApp";
-    this.message1 = "Geef uw gebruikersnaam in om in te loggen.";
-    this.message2 = "Nieuwe gebruiker?  Maak een account aan.";
-    this.activeUser = null;
-    this.categoriesOfUser = [];
-    this.notesOfUser = [];
-    this.notes = [];
-    this.userExists = false;
+    this.setVariablesToInitValue();
   }
   deleteUser(){
     this.apiService.delUser(this.activeUser.id).subscribe((data) => {
       console.log(data);
     })
+    this.setVariablesToInitValue();
+  }
+  
+  setVariablesToInitValue() {
+    //messages
     this.message0 = "Welkom bij notesApp";
     this.message1 = "Geef uw gebruikersnaam in om in te loggen.";
     this.message2 = "Nieuwe gebruiker?  Maak een account aan.";
+    this.message3 = "Geef hier de naam van uw categorie in";
+    this.message4 = "In welke kleur wilt u de categorie weergeven";
+    this.message5 = "Vul hier uw notitie in";
+    this.message6 = "Kies uw notitiecategorie";
+    this.loginUserName = "Emiel";
     this.activeUser = null;
-    this.categoriesOfUser = [];
-    this.notesOfUser = [];
-    this.notes = [];
+    //userExists is false wanneer loginUserName niet gekend is
     this.userExists = false;
+    //categoriën van gebruiker
+    this.categoriesOfUser = [];
+    //notities van gebruiker
+    this.notesOfUser = [];
+    //lijst van weer te geven notities
+    this.notes = [];
+      
+  //geselecteerde categorie staat standaard op -1: --- kies een categorie ---
+  this.selectedFilterCategoryFilter = -1;
+  //geselecteerde categorie staat standaard op -1: --- kies een categorie ---
+  this.selectedNotesCategory = -1;
+  //kleurlijst weergave categoriën
+  this.categoryColor = "";
+  //velden voor de nieuwe notitie weergeven
+  this.addNoteClicked =  false;
+  this.noteContent = "";
+  //velden voor de nieuwe account weergeven
+  this.addUserClicked = false;
+  this.newUserName= "";
+  //velden nieuwe categorie weergeven
+  this.addcategoryClicked = false;
+  this.categoryDescriptionNew = "";
+  //geselecteerde notitie om te bewerken of te verwijderen
+  this.changeNoteClicked = false;
+  //haal de kleur van de categorie op
+  this.colorCategorie = "";
+  //filter toepassen
+  this.filterOn=false;
+  this.filteredNotes = [];
+  this.substring = "";
+  this.notesWithSubstring = [];
   }
 
   //eenmaal ingelogd
-  //velden voor de nieuwe categorie weergeven
-  addcategoryClicked: boolean = false;
-  categoryDescriptionNew: string = "";
+  //velden nieuwe categorie weergeven
   setAddCategoryClicked(value) {
     this.addcategoryClicked = value;
   }  
@@ -200,7 +246,6 @@ export class HomeComponent implements OnInit {
     })
   }
   //haal de kleur van de categorie op
-  colorCategorie: string = "";
   getColor(note): string {      
     this.categoriesOfUser.forEach(category => {
       if(category.id == note.categoryId) {
@@ -211,8 +256,6 @@ export class HomeComponent implements OnInit {
   }
   
   //velden voor de nieuwe notitie weergeven
-  addNoteClicked: boolean = false;
-  noteContent: string = "";
   setAddNoteClicked(value) {
     this.addNoteClicked = value;
   }
@@ -246,19 +289,16 @@ export class HomeComponent implements OnInit {
     })
     }
     //geselecteerde notitie om te bewerken of te verwijderen
-    messageSelectedNote: string = "deze notitie kan worden bewerkt of verwijderd"
-    selectedNote: Note;
-    changeNoteClicked: boolean = false;
     setChangeNoteClicked(value) {
-      console.log("changeNote:" + this.selectedNote.content + " " + this.selectedNote.categoryId);
-      this.noteContent = this.selectedNote.content
-      this.selectedNotesCategory = this.selectedNote.categoryId
+      // this.noteContent = this.selectedNote.content
+      // this.selectedNotesCategory = this.selectedNote.categoryId
       this.addNoteClicked = value;
       this.changeNoteClicked = value;
     }
     onNoteClick(note) {
       this.selectedNote = note;
-      console.log(this.selectedNote.id);
+      this.noteContent = this.selectedNote.content
+      this.selectedNotesCategory = this.selectedNote.categoryId
     }
     changeNote(){      
       if(this.selectedNotesCategory == -1) {
@@ -321,12 +361,10 @@ export class HomeComponent implements OnInit {
   }
   
   //Filter op categorie
-  //geselecteerde filter ophalen
+  //filter toepassen
   filterCategory(event){
     this.selectedFilterCategoryFilter= event.target.value;
   }
-  filterOn=false;
-  filteredNotes: Note[]=[];
   filterNotes(){
     this.substring="";
     //if(this.selectedFilterCategoryFilter == -1) {
@@ -347,8 +385,6 @@ export class HomeComponent implements OnInit {
 }
 
   //Filter op substring
-  substring: string = "";
-  notesWithSubstring: Note[]=[];
   searchNotesWithSubstring() {
     this.notes.forEach(note => {
       if(note.content.includes(this.substring)) {
