@@ -47,8 +47,8 @@ export class APIService {
     return this.http.get(this.route + "/users/"+userId+"/categories");
   }
   //voeg een categorie toe voor een bepaalde gebruiker
-  addCategoriesForUser = ( userId: number, description: string) => {
-    return this.http.post(this.route + "/users/"+userId+"/categories", {description: description});
+  addCategoryForUser = ( userId: number, description: string, color: string) => {
+    return this.http.post(this.route + "/users/"+userId+"/categories", {description: description, color: color});
   }
   //verwijder een gebruiker
   delCategoriesOfUser = (categoryId: number) => {
@@ -68,15 +68,15 @@ export class APIService {
     return this.http.get(this.route + "/users/"+userId+"/notes");
   }
   //haal de lijst van alle notities van een gebruiker op
-  getNotesOfUserWithCategoryFilter = (userId: number, categoryId: string) => {
+  getNotesOfUserWithCategoryFilter = (userId: number, categoryId: number) => {
     return this.http.get(this.route + "/users/"+userId+"/categories/"+categoryId+"/notes");
   }
   //voeg een notitie toe voor een bepaalde gebruiker
-  addNoteForUser = ( userId: number, categoryId: string, content: string) => {
+  addNoteForUser = ( userId: number, categoryId: number, content: string) => {
     return this.http.post(this.route + "/users/"+userId+"/categories/"+categoryId+"/notes", {content: content});
   }
   //voeg een notitie toe voor een bepaalde gebruiker
-  updateNoteOfUser = ( noteId: string, categoryId: string, content: string) => {
+  updateNoteOfUser = ( noteId: string, categoryId: number, content: string) => {
     return this.http.patch(this.route + "/notes/"+noteId, {categoryId: categoryId, content: content});
   }
   //voeg een notitie toe voor een bepaalde gebruiker

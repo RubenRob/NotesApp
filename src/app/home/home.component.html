@@ -2,11 +2,12 @@
 
 
 <div>  
+  <!-- loginscherm -->
   <ng-container *ngIf="!userExists; then loginContent; else activeUserContent">
   </ng-container>
   
   <!-- loginscherm -->
-  <!-- gebruiker is nog niet gekend -->
+  <!-- gebruiker is nog niet ingelogd -->
   <ng-template #loginContent>
     <h4>{{message1}}</h4>
     <label>Gebruikersnaam</label>
@@ -15,12 +16,16 @@
     <button (click)="getUser()">Inloggen</button>
     <h4>{{message2}}</h4>
     <div>
-      <ng-container *ngIf="!addAccountClicked; then user; else newUser">
+      <!-- nieuw account aanmaken -->
+      <ng-container *ngIf="!addUserClicked; then noNewUser; else newUser">
       </ng-container>
 
-      <ng-template #user>
-        <button (click)="addAccount()">Nieuwe account</button>
+      <!-- geen nieuw account aanmaken -->
+      <ng-template #noNewUser>
+        <button (click)="addUserShowInputField()">Nieuwe account</button>
       </ng-template>
+      
+      <!-- wel nieuw account aanmaken -->
       <ng-template #newUser>
         <label>Gebruikersnaam</label>
         <br>
@@ -31,23 +36,97 @@
   </ng-template>
   
   <!-- userscherm -->
-  <!-- gebruikergegevens zijn gekend -->
+  <!-- gebruiker is ingelogd -->
   <ng-template #activeUserContent>
-    {{message0}}
     <table>
-
+      <tr>
+        <!--lijst van de notities, linkerkolom-->
+        <td valign="top">
+          <table>
+            <tr>
+              <td style="width: 200px"><button style="width: 200px" (click)="showAllNotes()" [disabled]="notesOfUser.length==0">Alle notities weergeven</button>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 200px">
+                <div>
+                <!-- nieuwe notitie aanmaken -->
+                <ng-container *ngIf="!addNoteClicked; then noNewNote; else newNote">
+                </ng-container>
+                
+                <!-- geen nieuwe notitie aanmaken -->
+                <ng-template #noNewNote>
+                  <button style="width: 200px" (click)="setAddNoteClicked(true)" [disabled]="categoriesOfUser.length==0" >Nieuwe notities aanmaken</button>
+                </ng-template>
+                
+                <!-- wel nieuwe notitie aanmaken -->
+                <ng-template #newNote>
+                  <label>Vul hieronder uw notitie in</label>
+                  <br>
+                  <input  style="width: 200px"  type="text"  select="true" [disabled]="categoriesOfUser.length==0" [(ngModel)]="noteContentNew"/>
+                  <select style="width: 200px"    [(ngModel)]="selectedFilterCategorie" (change)="filterCategory($event)">
+                    <option value=-1 >--- Kies een categorie ---</option>
+                    <option *ngFor="let category of categoriesOfUser" value={{category.id}}>{{ category.description }}</option>
+                    <!-- <option value={{categoriesOfUser.length+1}} >--- categorie toevoegen ---</option> -->
+                  </select>
+                  <button style="width: 200px" (click)="addNote()">Notitie toevoegen</button>
+                </ng-template>
+                <!-- nieuwe categorie aanmaken -->
+                <ng-container *ngIf="categoriesOfUser.length!=0 && !addcategoryClicked; then noNewCategory; else newCategory">
+                </ng-container>
+        
+                <!-- geen nieuwe categorie aanmaken -->
+                <ng-template #noNewCategory>
+                  <button style="width: 200px"  (click)="setAddCategoryClicked(true)">Nieuwe categorie aanmaken</button>
+                </ng-template>
+  
+                <!-- wel nieuwe categorie aanmaken -->
+                <ng-template #newCategory>
+                  {{message3}}
+                  <input  style="width: 200px"  type="text"  [(ngModel)]="categoryDescriptionNew"/>
+                  {{message4}}
+                  <input  style="width: 200px" [(colorPicker)]="categoryColor" [style.background]="categoryColor"/>
+                  <button style="width: 200px"  (click)="addCategory()">Maak categorie</button>
+                </ng-template>    
+              </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td>
+          <!--lijst van de notities, rechterkolom-->
+          <table>
+            <td valign="top">
+              <!--als de lijst leeg is-->
+              {{message1}}
+              <br>
+              {{message2}}
+              <!--als de lijst niet leeg is-->             
+              <ul height="10" id="notesList">
+                <li *ngFor="let note of notes;let i = index" (click)="onNoteClick(note.id, note.categoryId, note.content)">   
+                          
+                <button *ngFor="let category of categoriesOfUser" [ngStyle]="{'background-color':category.color}">{{note.content}}</button><!--style="width: 50%; background-color:{{kleur categorie}}"-->
+                </li>
+              </ul>
+            </td></table>
+        </td>
+      </tr>
+        
     </table>
    <!-- <app-notes [loginUser] = "loginUser"></app-notes> -->
   </ng-template>
+  <!-- loginscherm -->
   
-  <!-- userscherm -->
+
+
+  <!-- op te kuisen -->
   <table>
     <tr>
-      <td>
+      <!-- <td>
         <table>
           <tr>
-            <td><button (click)="showAllNotes()">Alle notities weergeven</button></td>
           </tr>
+        </td>
           <tr>
             <td><hr>filteren op categorie:</td>
           </tr>
@@ -109,7 +188,7 @@
           <tr>
             <td colspan="3">
               <div *ngFor="let note of notes">
-                <input type="text" name={{note.id}} [disabled]= true value="{{note.content}}"/>
+                <input type="text" name={{note.id}} [disabled]= true  (ng-click)="onItemClick(note.id, note.categoryId, note.content)" value="{{note.content}}"/>
                 <button (click)="NotitieBewerken(note)">Notitie bewerken</button>
                 <button (click)="NotitieVerwijderen(note.id)">Notitie verwijderen</button>
               </div>
@@ -118,18 +197,34 @@
         </table>   
       </td>
       <td>
-        <table>
-          <ul id="notesList">
-            <li *ngFor="let note of notes;let i = index" (click)="onItemClick(note.id)">             
+        <table>          
+          <ul height="10" id="notesList">
+            <li *ngFor="let note of notes;let i = index" (click)="onItemClick(note.id, note.categoryId, note.content)">             
               {{note.content}}
             </li>
           </ul>
-          <!-- <ul class="sub-menu collapse" id="statistics">
-            <li *ngFor="let item of listItems;let i = index" (click)="onItemClick('statistics',i)">{{ item }}</li>
-          </ul> -->
         </table>
       </td>
-
+      <td>
+        <table>    
+          <tr> 
+            <td>
+            <option *ngFor="let note of notes;let i = index" (click)="onItemClick(note.id, note.categoryId, note.content)">             
+              {{note.content}}
+            </option>
+        </td>
+        </tr>
+        <tr>
+          <td>
+            <button>om een knop te hebben</button>
+          </td>
+        </tr>
+      </table>
+    </td> -->
+    <td>
+      <table>       
+      </table>
+    </td>
     </tr>
   </table>
 
