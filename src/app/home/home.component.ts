@@ -78,6 +78,7 @@ export class HomeComponent implements OnInit {
         else {
           this.userExists= true;
           this.message0= "Welkom " + this.activeUser.name;
+          this.loginUserName="";
         }
       this.apiService.getCategoriesOfUser(this.activeUser.id).subscribe((data: Category[]) => {
         console.log(data);
@@ -132,6 +133,29 @@ export class HomeComponent implements OnInit {
         this.message2 = "Deze loginnaam bestaat al, gelieve een andere te kiezen."
       }
     })
+  }
+  logOff(){
+    this.message0 = "Welkom bij notesApp";
+    this.message1 = "Geef uw gebruikersnaam in om in te loggen.";
+    this.message2 = "Nieuwe gebruiker?  Maak een account aan.";
+    this.activeUser = null;
+    this.categoriesOfUser = [];
+    this.notesOfUser = [];
+    this.notes = [];
+    this.userExists = false;
+  }
+  deleteUser(){
+    this.apiService.delUser(this.activeUser.id).subscribe((data) => {
+      console.log(data);
+    })
+    this.message0 = "Welkom bij notesApp";
+    this.message1 = "Geef uw gebruikersnaam in om in te loggen.";
+    this.message2 = "Nieuwe gebruiker?  Maak een account aan.";
+    this.activeUser = null;
+    this.categoriesOfUser = [];
+    this.notesOfUser = [];
+    this.notes = [];
+    this.userExists = false;
   }
 
   //eenmaal ingelogd
@@ -335,166 +359,25 @@ export class HomeComponent implements OnInit {
     //this.substring="";
     this.notesWithSubstring=[];
   }
-  
-//hieronder uit te kuisen
 
-
-
-// //uit te kuisen code
-//   filterCategoryToepassen(){
-//       if(this.filterAan) {
-//         this.notes= this.notesOfUser;
-//       }
-//       if(this.categoryFilter == "-1") {
-//         this.filterAan=false;
-//         return;
-//       }
-//       this.notes.forEach(note => {
-//         if(note.categoryId == Number(this.categoryFilter)) {
-//           this.notesMetCategorieFilter.push(note);
-//         }
-//       });
-//       this.notes=this.notesMetCategorieFilter;
-//       this.filterAan=true;
-//       this.notesMetCategorieFilter=[];
-// //   }
-  content: string = "";
-//   categorieNotitie="-1";
-//   Notitiecategory(event){
-//     this.categorieNotitie= event.target.value;
-//   }
-  // NotitieToevoegen(){
-  //   if(this.categorieNotitie == "-1") {
-  //     alert("U koos geen categorie");
-  //     return;
-  //   }
-  //   this.apiService.addNoteForUser(this.activeUser.id, this.categorieNotitie, this.content + "(catId: " + this.categorieNotitie + ")").subscribe((data) => {
-  //     console.log(data);
-  //     this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Note[]) => {
-  //       console.log(data);
-  //       this.notesOfUser = data;
-  //       this.notes = data;
-  //     })
-  //   })
-  //   }
-
-    noteToUpdateId;
-    toevoegenNotitie= true;
-    NotitieBewerken(note) {
-      //naam en functie button wijzigen
-      this.toevoegenNotitie=false;
-      //velden content en categorie invullen op basis van de bestaande notitie
-      this.content=note.content;
-      this.selectedNotesCategory= note.categoryId;
-      //id van de notitie, want die hebben we nodig om in de DB aanpassingen te kunnen doen
-      this.noteToUpdateId = note.id;
-    }
-    NotitieWijzigen() {
-      this.apiService.updateNoteOfUser(this.noteToUpdateId,+this.selectedNotesCategory,this.content).subscribe((data) => {
-      console.log(data);
-      this.apiService.getNotesOfUser(this.activeUser.id).subscribe((notes: Note[]) => {
-        console.log(notes);
-        this.notesOfUser = notes;
-      })
-    })
-    }
-//moeten van invoervelden komen:
-addUser_userName = "Tina";
-addCategoriesForUser_description= "test1";
-deleteCategorie_idOfUser: number = 10;
-addCategorie_idOfUser:number = 1;
-contentNieuweNotitie:string = "nieuwe notitie van Gina met cat 6"
-  //apiservice
-    //gebruikers ophalen
-  // getUsers() {
-  //   this.apiService.getUsers().subscribe((data: User[]) => {
-  //     console.log(data);
-  //     this.users = data;
-  //   })
-  // }
-  //gebruiker verwijderen
-  delUser() {
-    this.apiService.delUser(this.activeUser.id).subscribe((data) => {
-      console.log(data);
-    })
-  }
+  //voor een eventuele administrator
+  //gebruikers
+  getUsers() {
+     this.apiService.getUsers().subscribe((data: User[]) => {
+       console.log(data);
+     })
+   }
 
   //categoriën
-  //catergoriën ophalen
-  // getCategories() {
-  //   this.apiService.getCategories().subscribe((data: Category[]) => {
-  //     console.log(data);
-  //     this.categories = data;
-  //   })
-  // }
-  //categoriën van de actieve gebruiker ophalen
-  getCategoriesOfUser(userId) {
-    this.apiService.getCategoriesOfUser(userId).subscribe((data: Category[]) => {
+  getCategories() {
+    this.apiService.getCategories().subscribe((data: Category[]) => {
       console.log(data);
-      this.categoriesOfUser = data;
-    })
-  }
-  //categoriën van de actieve gebruiker verwijderen en dus ook de bijhorende notities
-  deleteCategoriesOfUser(){
-    this.apiService.delCategoriesOfUser(this.deleteCategorie_idOfUser).subscribe((data) => {
-      console.log(data);
-    })
-  }
+     })
+    }
   //notities
   getNotes() {
     this.apiService.getNotes().subscribe((data: Note[]) => {
       console.log(data);
-      this.notes = data;
     })
   }
-  getNotesOfUser(userId) {
-    this.apiService.getNotesOfUser(userId).subscribe((data: Note[]) => {
-      console.log(data);
-      this.notesOfUser = data;
-    })
-  }
-  addNoteForUser(userId, categoryId, content) {
-    this.apiService.addNoteForUser(userId, categoryId,content).subscribe((data) => {
-      console.log(data);
-    })
-  }
-    //opgekuisd
-
-
-  // onChangeCategory(description: string, isChecked: boolean) {
-  //   const categories = (this.formCategory.controls.description as FormArray);
-
-  //   if (isChecked) {
-  //     categories.push(new FormControl(description));
-  //   } 
-  //   else {
-  //     const index = categories.controls.findIndex(x => x.value === description);
-  //     categories.removeAt(index);
-  //   }
-  // }
-  
-  // onChangeNote(content: string, isChecked: boolean) {
-  //   const notes = (this.formNote.controls.content as FormArray);
-
-  //   if (isChecked) {
-  //     notes.push(new FormControl(content));
-  //   } 
-  //   else {
-  //     const index = notes.controls.findIndex(x => x.value === content);
-  //     notes.removeAt(index);
-  //   }
-  // }
-
-
-  // submitCategory() {
-  //   this.notesNaFilter=[];
-  //   this.filters = this.formCategory.value.description;
-  //   this.filters.forEach((filter) => {
-  //     this.OphalenNotitie(filter);
-  //     console.log(this.formCategory.value.description);
-  //   });
-  // }
-  // submitNote() {
-  //   console.log(this.formNote.value.content);
-  // }
 }

@@ -1,5 +1,8 @@
 <h2>{{message0}}</h2>
 
+<!-- <button style="width: 200px" (click)="getNotes()">alle notities</button>
+<button style="width: 200px" (click)="getCategories()">alle categoriën</button>
+<button style="width: 200px" (click)="getUsers()">alle gebruikers</button> -->
 
 <div>  
   <!-- loginscherm -->
@@ -12,8 +15,9 @@
     <h4>{{message1}}</h4>
     <label>Gebruikersnaam</label>
     <br>
-    <input type="text" [(ngModel)]="loginUserName"/>
-    <button style="width: 200px" (click)="getUser()">Inloggen</button>
+    <input style="width: 196px" type="text" [(ngModel)]="loginUserName"/>
+    <br>
+    <button style="width: 200px" (click)="getUser()">inloggen</button>
     <h4>{{message2}}</h4>
     <div>
       <!-- nieuw account aanmaken -->
@@ -22,15 +26,15 @@
 
       <!-- geen nieuw account aanmaken -->
       <ng-template #noNewUser>
-        <button style="width: 200px" (click)="addUserShowInputField()">Nieuwe account</button>
+        <button style="width: 200px" (click)="addUserShowInputField()">nieuwe account</button>
       </ng-template>
       
       <!-- wel nieuw account aanmaken -->
       <ng-template #newUser>
-        <label>Gebruikersnaam</label>
+        <label>gebruikersnaam</label>
         <br>
         <input  style="width: 196px" type="text" [(ngModel)]="newUserName"/>
-        <button  style="width: 200px"(click)="addUser()">Maak account</button>
+        <button  style="width: 200px"(click)="addUser()">account aanmaken</button>
       </ng-template>
     </div>
   </ng-template>
@@ -51,9 +55,9 @@
                 
                 <!-- geen nieuwe notitie aanmaken -->
                 <ng-template #noNewNote>
-                  <button style="width: 200px" (click)="setAddNoteClicked(true)" [disabled]="categoriesOfUser.length==0">Nieuwe notitie aanmaken</button>
-                  <button style="width: 200px" (click)="setChangeNoteClicked(true)" [disabled]="notesOfUser.length==0">Notitie bewerken</button>
-                  <button style="width: 200px" (click)="deleteNote()" [disabled]="notesOfUser.length==0">Notitie verwijderen</button>
+                  <button style="width: 200px" (click)="setAddNoteClicked(true)" [disabled]="categoriesOfUser.length==0">nieuwe notitie aanmaken</button>
+                  <button style="width: 200px" (click)="setChangeNoteClicked(true)" [disabled]="notesOfUser.length==0">notitie bewerken</button>
+                  <button style="width: 200px" (click)="deleteNote()" [disabled]="notesOfUser.length==0">notitie verwijderen</button>
                 </ng-template>
                 
                 <!-- wel nieuwe notitie aanmaken -->
@@ -75,12 +79,12 @@
                 
                     <!-- button notitie maken -->
                     <ng-template #noNewNoteButton>
-                    <button style="width: 200px" (click)="addNote()">Notitie toevoegen</button>
+                    <button style="width: 200px" (click)="addNote()">notitie toevoegen</button>
                     </ng-template>
                     
                     <!-- button notitie aanpassen -->
                     <ng-template #newNoteButton>
-                      <button style="width: 200px" (click)="changeNote()">Notitie wijzigen</button>
+                      <button style="width: 200px" (click)="changeNote()">notitie wijzigen</button>
                     </ng-template>
                 </ng-template>
               </td>
@@ -95,7 +99,7 @@
                 </ng-container> 
                 <!-- geen nieuwe categorie aanmaken -->
                 <ng-template #noNewCategory>
-                  <button style="width: 200px"  (click)="setAddCategoryClicked(true)">Nieuwe categorie aanmaken</button>
+                  <button style="width: 200px"  (click)="setAddCategoryClicked(true)">nieuwe categorie aanmaken</button>
                 </ng-template>
   
                 <!-- wel nieuwe categorie aanmaken -->
@@ -108,7 +112,7 @@
                   <br>
                   <input   style="width: 196px" [(colorPicker)]="categoryColor" [style.background]="categoryColor"/>
                   <br>
-                  <button style="width: 200px"  (click)="addCategory()">Maak categorie</button>
+                  <button style="width: 200px"  (click)="addCategory()">maak categorie</button>
                   <br>
                 </ng-template>   
               </td>
@@ -129,7 +133,7 @@
                 <option [ngStyle]="{'background-color': category.color}" *ngFor="let category of categoriesOfUser" value={{category.id}}>{{ category.description }}</option>
               </select>  
               <br> 
-              <button style="width: 200px" (click)="filterNotes()" [disabled]="notesOfUser.length==0">Pas filter toe</button>            
+              <button style="width: 200px" (click)="filterNotes()" [disabled]="notesOfUser.length==0">filter toepassen</button>            
               </td>
             </tr>
             <tr>
@@ -143,11 +147,23 @@
               <td>
                 <input style="width: 196px" [(ngModel)]="substring" [disabled]="notesOfUser.length==0"/>
               <br> 
-              <button style="width: 200px" (click)="searchNotesWithSubstring()" [disabled]="notesOfUser.length==0">Zoeken</button>            
+              <button style="width: 200px" (click)="searchNotesWithSubstring()" [disabled]="notesOfUser.length==0">zoeken</button>            
               </td>
             </tr>
             <tr>
-              <td><button style="width: 200px" (click)="showAllNotes()" [disabled]="notesOfUser.length==0">Alle filters wissen</button>
+              <td><button style="width: 200px" (click)="showAllNotes()" [disabled]="notesOfUser.length==0">alle filters wissen</button>
+              </td>
+            </tr>
+            <!--afmelden / uitschrijven-->
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td><button style="width: 200px" (click)="logOff()">afmelden</button>            
+              </td>
+            </tr>
+            <tr>
+              <td><button style="width: 200px" (click)="deleteUser()">uitschrijven</button>
               </td>
             </tr>
           </table>
