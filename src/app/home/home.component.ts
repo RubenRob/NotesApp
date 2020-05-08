@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 
 import { APIService } from '../api.service';
+import { ColorFormats } from 'ngx-color-picker/lib/formats';
 
 interface User {
   id: number;
@@ -42,7 +43,9 @@ export class HomeComponent implements OnInit {
   message1: string = "Geef uw gebruikersnaam in om in te loggen.";
   message2: string = "Nieuwe gebruiker?  Maak een account aan.";
   message3: string = "Geef hier de naam van uw categorie in";
-  message4: string = "In welke kleur wilt u de categorie weergeven:";
+  message4: string = "In welke kleur wilt u de categorie weergeven";
+  message5: string = "Vul hier uw notitie in";
+  message6: string = "Kies uw notitiecategorie";
   loginUserName: string = "Emiel";
   //userExists is false wanneer loginUserName niet gekend is
   userExists: boolean = false;
@@ -52,8 +55,9 @@ export class HomeComponent implements OnInit {
   categoriesOfUser: Category[] = [];
   //categoryListEmpty: boolean = true;
   //geselecteerde categorie staat standaard op -1: --- kies een categorie ---
-  selectedFilterCategorie: number = -1;
-  selectednotitieCategorie="-1";
+  selectedFilterCategoryFilter: number = -1;
+  //geselecteerde categorie staat standaard op -1: --- kies een categorie ---
+  selectedNotesCategory: number = -1;
   //kleurlijst weergave categoriën
   categoryColor;
   //notities van gebruiker
@@ -80,7 +84,6 @@ export class HomeComponent implements OnInit {
         this.categoriesOfUser = data;
         if(data.length == 0) {
           //this.categoryListEmpty = true;
-          this.selectedFilterCategorie = 1;
           this.message2 = "U moet eerst een categorie aanmaken om een nieuwe notitie te kunnen toevoegen.";
         }
         else{
@@ -139,16 +142,16 @@ export class HomeComponent implements OnInit {
     this.addcategoryClicked = value;
   }  
   //geselecteerde filter ophalen
-  filterCategory(event){
-    this.selectedFilterCategorie= event.target.value;
+  noteCategory(event){
+    this.selectedNotesCategory= event.target.value;
   }
   addCategory() {
-    if(this.categoryDescriptionNew==""){
-      this.message3="U moet een naam opgeven";
-      return;
-    }
     if(this.categoryColor==undefined){
       this.message4="U moet een kleur selecteren";
+      return;
+    }
+    if(this.categoryDescriptionNew==""){
+      this.message3="U heeft geen categorie ingegeven";
       return;
     }
     this.apiService.addCategoryForUser(this.activeUser.id, this.categoryDescriptionNew,this.categoryColor).subscribe((data) => {
@@ -159,7 +162,7 @@ export class HomeComponent implements OnInit {
         //als alles goed ging is de lijst nu niet meer leeg
         if(data.length == 0) {
           //this.categoryListEmpty = true;
-          this.selectedFilterCategorie = 1;
+          this.selectedNotesCategory = 1;
           this.message1 = "U heeft nog geen notities om weer te geven.";
           this.message2 = "U moet eerst een categorie aanmaken om een nieuwe notitie te kunnen toevoegen.";
         }
@@ -172,23 +175,36 @@ export class HomeComponent implements OnInit {
       })
     })
   }
+  //haal de kleur van de categorie op
+  colorCategorie: string = "";
+  getColor(note): string {      
+    this.categoriesOfUser.forEach(category => {
+      if(category.id == note.categoryId) {
+      this.colorCategorie = category.color;
+      }
+    });
+    return this.colorCategorie;
+  }
   
   //velden voor de nieuwe notitie weergeven
   addNoteClicked: boolean = false;
-  noteContentNew: string = "";
+  noteContent: string = "";
   setAddNoteClicked(value) {
     this.addNoteClicked = value;
   }
-
   addNote() {
-    if(this.selectedFilterCategorie == -1) {
-      alert("U koos geen categorie");
+    if(this.selectedNotesCategory == -1) {
+      this.message6 = "U moet een categorie selecteren";
       return;
     }
-    this.apiService.addNoteForUser(this.activeUser.id, this.selectedFilterCategorie, this.noteContentNew + "(catId: " + this.selectedFilterCategorie + ")").subscribe((data) => {
+    if(this.noteContent == "") {
+      this.message5 ="Uw heeft geen notitie ingegeven";
+      return;
+    }
+    this.apiService.addNoteForUser(this.activeUser.id, this.selectedNotesCategory, this.noteContent).subscribe((data) => {
       console.log(data);
-      this.selectedFilterCategorie == -1;
-      this.noteContentNew = "";
+      this.selectedNotesCategory = -1;
+      this.noteContent = "";
       this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Note[]) => {
         console.log(data);
         //notesOfUser is de lijst met alle notities van de gebruiker
@@ -199,57 +215,154 @@ export class HomeComponent implements OnInit {
           this.message1 = "U heeft nog geen notities om weer te geven.";
         }
         else{
-          //this.categoryListEmpty = false;
+          this.setAddNoteClicked(false);
           this.message1 = "";
         }
       })
     })
     }
+    //geselecteerde notitie om te bewerken of te verwijderen
+    messageSelectedNote: string = "deze notitie kan worden bewerkt of verwijderd"
+    selectedNote: Note;
+    changeNoteClicked: boolean = false;
+    setChangeNoteClicked(value) {
+      console.log("changeNote:" + this.selectedNote.content + " " + this.selectedNote.categoryId);
+      this.noteContent = this.selectedNote.content
+      this.selectedNotesCategory = this.selectedNote.categoryId
+      this.addNoteClicked = value;
+      this.changeNoteClicked = value;
+    }
+    onNoteClick(note) {
+      this.selectedNote = note;
+      console.log(this.selectedNote.id);
+    }
+    changeNote(){      
+      if(this.selectedNotesCategory == -1) {
+        this.message6 = "U moet een categorie selecteren";
+        return;
+      }
+      if(this.noteContent == "") {
+        this.message5 ="Uw heeft geen notitie ingegeven";
+        return;
+      }
+      this.apiService.updateNoteOfUser(this.selectedNote.id, this.selectedNotesCategory, this.noteContent).subscribe((data) => {
+        console.log(data);
+        this.selectedNotesCategory = -1;
+        this.noteContent = "";
+        this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Note[]) => {
+          console.log(data);
+          //notesOfUser is de lijst met alle notities van de gebruiker
+          this.notesOfUser = data;
+          //notes is de lijst met weer te geven notities
+          this.notes=data;
+          if(data.length == 0) {
+            this.message1 = "Oeps, hier ging iets mis.";
+          }
+          else{
+            this.setAddNoteClicked(false);
+            this.setChangeNoteClicked(false);
+            this.message1 = "";
+          }
+        })
+      })
+    }
 
+    deleteNote(){
+      this.apiService.delNoteOfUser(this.selectedNote.id).subscribe((data) => {
+        console.log(data);
+        this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Note[]) => {
+          console.log(data);
+          //notesOfUser is de lijst met alle notities van de gebruiker
+          this.notesOfUser = data;
+          //notes is de lijst met weer te geven notities
+          this.notes=data;
+          if(data.length == 0) {
+            this.message1 = "U heeft nog geen notities om weer te geven.";
+          }
+          else{
+            this.setAddNoteClicked(false);
+            this.message1 = "";
+          }
+        })
+      })
+    }
+  
+
+  //Filters wissen
   //lijst notities tonen
   showAllNotes(){
     this.notes= this.notesOfUser;
-    this.filterAan=false;
-    this.selectedFilterCategorie = -1;
+    this.filterOn=false;
+    this.selectedFilterCategoryFilter = -1;
+  }
+  
+  //Filter op categorie
+  //geselecteerde filter ophalen
+  filterCategory(event){
+    this.selectedFilterCategoryFilter= event.target.value;
+  }
+  filterOn=false;
+  filteredNotes: Note[]=[];
+  filterNotes(){
+    this.substring="";
+    //if(this.selectedFilterCategoryFilter == -1) {
+    //  this.filterOn=false;
+    //  return;
+    //}
+    //if(this.filterOn) {
+    //  this.notes= this.notesOfUser;
+    //}
+    this.notesOfUser.forEach(note => {
+      if(note.categoryId == this.selectedFilterCategoryFilter) {
+        this.filteredNotes.push(note);
+      }
+    });
+    this.notes=this.filteredNotes;
+    //this.filterOn=true;
+    this.filteredNotes=[];
+}
+
+  //Filter op substring
+  substring: string = "";
+  notesWithSubstring: Note[]=[];
+  searchNotesWithSubstring() {
+    this.notes.forEach(note => {
+      if(note.content.includes(this.substring)) {
+        this.notesWithSubstring.push(note);
+      }
+    });
+    this.notes=this.notesWithSubstring;
+    //this.substring="";
+    this.notesWithSubstring=[];
   }
   
 //hieronder uit te kuisen
 
-onNoteClick(noteId, noteCategoryId, noteContent)
-  {
-    this.categoriesOfUser.forEach(element => {
-      console.log(element.description);
-    });
-    console.log(noteId + " " + noteCategoryId + " " + noteContent);
-  }
 
 
-//uit te kuisen code
-categoryFilter = "-1";
-  filterAan=false;
-  notesMetCategorieFilter: Note[]=[];
-  filterCategoryToepassen(){
-      if(this.filterAan) {
-        this.notes= this.notesOfUser;
-      }
-      if(this.categoryFilter == "-1") {
-        this.filterAan=false;
-        return;
-      }
-      this.notes.forEach(note => {
-        if(note.categoryId == Number(this.categoryFilter)) {
-          this.notesMetCategorieFilter.push(note);
-        }
-      });
-      this.notes=this.notesMetCategorieFilter;
-      this.filterAan=true;
-      this.notesMetCategorieFilter=[];
-  }
+// //uit te kuisen code
+//   filterCategoryToepassen(){
+//       if(this.filterAan) {
+//         this.notes= this.notesOfUser;
+//       }
+//       if(this.categoryFilter == "-1") {
+//         this.filterAan=false;
+//         return;
+//       }
+//       this.notes.forEach(note => {
+//         if(note.categoryId == Number(this.categoryFilter)) {
+//           this.notesMetCategorieFilter.push(note);
+//         }
+//       });
+//       this.notes=this.notesMetCategorieFilter;
+//       this.filterAan=true;
+//       this.notesMetCategorieFilter=[];
+// //   }
   content: string = "";
-  categorieNotitie="-1";
-  Notitiecategory(event){
-    this.categorieNotitie= event.target.value;
-  }
+//   categorieNotitie="-1";
+//   Notitiecategory(event){
+//     this.categorieNotitie= event.target.value;
+//   }
   // NotitieToevoegen(){
   //   if(this.categorieNotitie == "-1") {
   //     alert("U koos geen categorie");
@@ -265,18 +378,6 @@ categoryFilter = "-1";
   //   })
   //   }
 
-    substring="";
-    notesMetSubstring: Note[]=[];
-    NotitiesMetZoekstringZoeken() {
-      this.notes.forEach(note => {
-        if(note.content.includes(this.substring)) {
-          this.notesMetSubstring.push(note);
-        }
-      });
-      this.notes=this.notesMetSubstring;
-      this.substring="";
-      this.notesMetSubstring=[];
-    }
     noteToUpdateId;
     toevoegenNotitie= true;
     NotitieBewerken(note) {
@@ -284,12 +385,12 @@ categoryFilter = "-1";
       this.toevoegenNotitie=false;
       //velden content en categorie invullen op basis van de bestaande notitie
       this.content=note.content;
-      this.selectednotitieCategorie= note.categoryId;
+      this.selectedNotesCategory= note.categoryId;
       //id van de notitie, want die hebben we nodig om in de DB aanpassingen te kunnen doen
       this.noteToUpdateId = note.id;
     }
     NotitieWijzigen() {
-      this.apiService.updateNoteOfUser(this.noteToUpdateId,+this.selectednotitieCategorie,this.content).subscribe((data) => {
+      this.apiService.updateNoteOfUser(this.noteToUpdateId,+this.selectedNotesCategory,this.content).subscribe((data) => {
       console.log(data);
       this.apiService.getNotesOfUser(this.activeUser.id).subscribe((notes: Note[]) => {
         console.log(notes);
@@ -297,16 +398,6 @@ categoryFilter = "-1";
       })
     })
     }
-    NotitieVerwijderen(noteId) {
-      this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Note[]) => {
-        console.log(data);
-        this.apiService.delNoteOfUser(noteId).subscribe((data) => {
-          console.log(data);
-        })
-        this.notesOfUser = data;
-      })
-    }
-
 //moeten van invoervelden komen:
 addUser_userName = "Tina";
 addCategoriesForUser_description= "test1";

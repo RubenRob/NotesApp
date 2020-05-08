@@ -13,7 +13,7 @@
     <label>Gebruikersnaam</label>
     <br>
     <input type="text" [(ngModel)]="loginUserName"/>
-    <button (click)="getUser()">Inloggen</button>
+    <button style="width: 200px" (click)="getUser()">Inloggen</button>
     <h4>{{message2}}</h4>
     <div>
       <!-- nieuw account aanmaken -->
@@ -22,15 +22,15 @@
 
       <!-- geen nieuw account aanmaken -->
       <ng-template #noNewUser>
-        <button (click)="addUserShowInputField()">Nieuwe account</button>
+        <button style="width: 200px" (click)="addUserShowInputField()">Nieuwe account</button>
       </ng-template>
       
       <!-- wel nieuw account aanmaken -->
       <ng-template #newUser>
         <label>Gebruikersnaam</label>
         <br>
-        <input type="text" [(ngModel)]="newUserName"/>
-        <button (click)="addUser()">Maak account</button>
+        <input  style="width: 196px" type="text" [(ngModel)]="newUserName"/>
+        <button  style="width: 200px"(click)="addUser()">Maak account</button>
       </ng-template>
     </div>
   </ng-template>
@@ -44,37 +44,55 @@
         <td valign="top">
           <table>
             <tr>
-              <td style="width: 200px"><button style="width: 200px" (click)="showAllNotes()" [disabled]="notesOfUser.length==0">Alle notities weergeven</button>
-              </td>
-            </tr>
-            <tr>
               <td style="width: 200px">
-                <div>
                 <!-- nieuwe notitie aanmaken -->
                 <ng-container *ngIf="!addNoteClicked; then noNewNote; else newNote">
                 </ng-container>
                 
                 <!-- geen nieuwe notitie aanmaken -->
                 <ng-template #noNewNote>
-                  <button style="width: 200px" (click)="setAddNoteClicked(true)" [disabled]="categoriesOfUser.length==0" >Nieuwe notities aanmaken</button>
+                  <button style="width: 200px" (click)="setAddNoteClicked(true)" [disabled]="categoriesOfUser.length==0">Nieuwe notitie aanmaken</button>
+                  <button style="width: 200px" (click)="setChangeNoteClicked(true)" [disabled]="notesOfUser.length==0">Notitie bewerken</button>
+                  <button style="width: 200px" (click)="deleteNote()" [disabled]="notesOfUser.length==0">Notitie verwijderen</button>
                 </ng-template>
                 
                 <!-- wel nieuwe notitie aanmaken -->
                 <ng-template #newNote>
-                  <label>Vul hieronder uw notitie in</label>
+                  <label>{{message5}}</label>
                   <br>
-                  <input  style="width: 200px"  type="text"  select="true" [disabled]="categoriesOfUser.length==0" [(ngModel)]="noteContentNew"/>
-                  <select style="width: 200px"    [(ngModel)]="selectedFilterCategorie" (change)="filterCategory($event)">
+                  <input  style="width: 196px" type="text"  select="true" [disabled]="categoriesOfUser.length==0" [(ngModel)]="noteContent"/>
+                  <br>
+                  <label>{{message6}}</label>
+                  <br>
+                  <select style="width: 200px" [(ngModel)]="selectedNotesCategory" (change)="noteCategory($event)">
                     <option value=-1 >--- Kies een categorie ---</option>
                     <option *ngFor="let category of categoriesOfUser" value={{category.id}}>{{ category.description }}</option>
-                    <!-- <option value={{categoriesOfUser.length+1}} >--- categorie toevoegen ---</option> -->
                   </select>
-                  <button style="width: 200px" (click)="addNote()">Notitie toevoegen</button>
+                  <br>
+                    <!--notitie toevoegen of notitie wijzigen-->
+                    <ng-container *ngIf="!changeNoteClicked; then noNewNoteButton; else newNoteButton">
+                    </ng-container>
+                
+                    <!-- button notitie maken -->
+                    <ng-template #noNewNoteButton>
+                    <button style="width: 200px" (click)="addNote()">Notitie toevoegen</button>
+                    </ng-template>
+                    
+                    <!-- button notitie aanpassen -->
+                    <ng-template #newNoteButton>
+                      <button style="width: 200px" (click)="changeNote()">Notitie wijzigen</button>
+                    </ng-template>
                 </ng-template>
+              </td>
+            </tr>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td style="width: 200px">
                 <!-- nieuwe categorie aanmaken -->
                 <ng-container *ngIf="categoriesOfUser.length!=0 && !addcategoryClicked; then noNewCategory; else newCategory">
-                </ng-container>
-        
+                </ng-container> 
                 <!-- geen nieuwe categorie aanmaken -->
                 <ng-template #noNewCategory>
                   <button style="width: 200px"  (click)="setAddCategoryClicked(true)">Nieuwe categorie aanmaken</button>
@@ -83,35 +101,81 @@
                 <!-- wel nieuwe categorie aanmaken -->
                 <ng-template #newCategory>
                   {{message3}}
-                  <input  style="width: 200px"  type="text"  [(ngModel)]="categoryDescriptionNew"/>
+                  <br>
+                  <input   style="width: 196px"  type="text"  [(ngModel)]="categoryDescriptionNew"/>
+                  <br>
                   {{message4}}
-                  <input  style="width: 200px" [(colorPicker)]="categoryColor" [style.background]="categoryColor"/>
+                  <br>
+                  <input   style="width: 196px" [(colorPicker)]="categoryColor" [style.background]="categoryColor"/>
+                  <br>
                   <button style="width: 200px"  (click)="addCategory()">Maak categorie</button>
-                </ng-template>    
-              </div>
+                  <br>
+                </ng-template>   
+              </td>
+            </tr>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>Filteren op categorie                
+              </td>
+            </tr>
+            <tr>
+              <td><select style="width: 200px" [(ngModel)]="selectedFilterCategoryFilter" (change)="filterCategory($event)" [disabled]="notesOfUser.length==0">
+                <option value=-1 >--- Kies een categorie ---</option>
+                <option [ngStyle]="{'background-color': category.color}" *ngFor="let category of categoriesOfUser" value={{category.id}}>{{ category.description }}</option>
+              </select>  
+              <br> 
+              <button style="width: 200px" (click)="filterNotes()" [disabled]="notesOfUser.length==0">Pas filter toe</button>            
+              </td>
+            </tr>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>Filteren op inhoud            
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input style="width: 196px" [(ngModel)]="substring" [disabled]="notesOfUser.length==0"/>
+              <br> 
+              <button style="width: 200px" (click)="searchNotesWithSubstring()" [disabled]="notesOfUser.length==0">Zoeken</button>            
+              </td>
+            </tr>
+            <tr>
+              <td><button style="width: 200px" (click)="showAllNotes()" [disabled]="notesOfUser.length==0">Alle filters wissen</button>
               </td>
             </tr>
           </table>
         </td>
-        <td>
+        <td valign="top">
           <!--lijst van de notities, rechterkolom-->
           <table>
-            <td valign="top">
-              <!--als de lijst leeg is-->
-              {{message1}}
-              <br>
-              {{message2}}
-              <!--als de lijst niet leeg is-->             
-              <ul height="10" id="notesList">
-                <li *ngFor="let note of notes;let i = index" (click)="onNoteClick(note.id, note.categoryId, note.content)">   
-                          
-                <button *ngFor="let category of categoriesOfUser" [ngStyle]="{'background-color':category.color}">{{note.content}}</button><!--style="width: 50%; background-color:{{kleur categorie}}"-->
-                </li>
-              </ul>
-            </td></table>
+            <td  style="width: 200px" valign="top">
+              <ng-container *ngIf="notesOfUser.length!=0; then notesToShow; else noNotesToShow">
+              </ng-container>
+              <!--als de lijst niet leeg is-->
+              <ng-template #notesToShow> 
+                <label>Klik op de notitie die u wenst te bewerken of verwijderen</label>
+                <div *ngFor="let note of notes" >
+                <button [ngStyle]="{'background-color':getColor(note)}" style="width: 500px" (click)="onNoteClick(note)">{{note.content}}</button>      
+                {{messageSelectedNote}}
+                </div>
+              </ng-template>
+               <!--als de lijst leeg is-->
+              <ng-template #noNotesToShow>
+                {{message1}}
+                <br>
+                {{message2}}
+              </ng-template>    
+              </td>
+          </table>
         </td>
-      </tr>
-        
+      </tr>        
     </table>
    <!-- <app-notes [loginUser] = "loginUser"></app-notes> -->
   </ng-template>
@@ -125,6 +189,9 @@
       <!-- <td>
         <table>
           <tr>
+              <li *ngFor="let note of notes;let i = index" (click)="onNoteClick(note.id, note.categoryId, note.content)">                             
+                <button [ngStyle]="{'background-color':getColor(note)}" style="width: 50%">{{note.content}}</button>
+                </li>
           </tr>
         </td>
           <tr>
