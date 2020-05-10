@@ -1,23 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 import { APIService } from '../api.service';
-
-interface User {
-  id: number;
-  name: string;
-}
-interface Note {
-  id: number;
-  content: string;
-  userId: number;
-  categoryId: number;
-}
-interface Category {
-  id: number;
-  description: string;
-  color: string;
-  userId: number;
-}
+import { Gebruiker } from '../user';
+import { Categorie } from '../category';
+import { Notitie } from '../note';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +14,7 @@ interface Category {
 export class HomeComponent implements OnInit {
 
   private apiService: APIService;
+  
     
   constructor(ApiService: APIService) {
     this.apiService = ApiService;
@@ -48,13 +35,14 @@ export class HomeComponent implements OnInit {
   //userExists is false wanneer loginUserName niet gekend is
   userExists: boolean = false;
   //gebruiker met naam loginUserName
-  activeUser: User;
+  //activeUser: User;
+  activeUser: Gebruiker;
   //categoriën van gebruiker
-  categoriesOfUser: Category[] = [];
+  categoriesOfUser: Categorie[] = [];
   //notities van gebruiker
-  notesOfUser: Note[] = [];
+  notesOfUser: Notitie[] = [];
   //lijst van weer te geven notities
-  notes: Note[] = [];
+  notes: Notitie[] = [];
   //variabelen voor specifieke functies
   //geselecteerde categorie staat standaard op -1: --- kies een categorie ---
   selectedFilterCategoryFilter: number = -1;
@@ -73,59 +61,59 @@ export class HomeComponent implements OnInit {
   categoryDescriptionNew: string = "";
   //geselecteerde notitie om te bewerken of te verwijderen
   messageSelectedNote: string = "deze notitie kan worden bewerkt of verwijderd"
-  selectedNote: Note;
+  selectedNote: Notitie;
   changeNoteClicked: boolean = false;
   //haal de kleur van de categorie op
   colorCategorie: string = "";
   //filter toepassen
   filterOn=false;
-  filteredNotes: Note[]=[];
+  filteredNotes: Notitie[]=[];
   substring: string = "";
-  notesWithSubstring: Note[]=[];
+  notesWithSubstring: Notitie[]=[];
 
   //controleer of de ingegeven naam bestaat en ga de gegevens van die gebruiker ophalen  
-  getUser() {
-    this.apiService.getUser(this.loginUserName).subscribe((data: User) => {
-      console.log(data);
-      this.activeUser= data;
-      if(this.activeUser.name === undefined) {
-        this.userExists= false;
-        this.message1= "Gebruiker " + this.loginUserName + " is niet gekend!  Probeer opnieuw of maak een account aan.";
-        return;
-      }
-        else {
-          this.userExists= true;
-          this.message0= "Welkom " + this.activeUser.name;
-          this.loginUserName="";
-        }
-      this.apiService.getCategoriesOfUser(this.activeUser.id).subscribe((data: Category[]) => {
-        console.log(data);
-        this.categoriesOfUser = data;
-        if(data.length == 0) {
+   getUser() {
+     this.apiService.getUser(this.loginUserName).subscribe((data: Gebruiker) => {
+       console.log(data);
+       this.activeUser= data;
+       if(this.activeUser.name === undefined) {
+         this.userExists= false;
+         this.message1= "Gebruiker " + this.loginUserName + " is niet gekend!  Probeer opnieuw of maak een account aan.";
+         return;
+       }
+         else {
+           this.userExists= true;
+           this.message0= "Welkom " + this.activeUser.name;
+           this.loginUserName="";
+         }
+       this.apiService.getCategoriesOfUser(this.activeUser.id).subscribe((data: Categorie[]) => {
+         console.log(data);
+         this.categoriesOfUser = data;
+         if(data.length == 0) {
           //this.categoryListEmpty = true;
-          this.message2 = "U moet eerst een categorie aanmaken om een nieuwe notitie te kunnen toevoegen.";
-        }
-        else{
-          //this.categoryListEmpty = false;
-          this.message2 = "";
-        }
-      })
-      this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Note[]) => {
+           this.message2 = "U moet eerst een categorie aanmaken om een nieuwe notitie te kunnen toevoegen.";
+         }
+         else{
+           //this.categoryListEmpty = false;
+           this.message2 = "";
+         }
+       })
+       this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Notitie[]) => {
         console.log(data);
-        //notesOfUser is de lijst met alle notities van de gebruiker
-        this.notesOfUser = data;
-        //notes is de lijst met weer te geven notities
-        this.notes=data;
-        if(data.length == 0) {
-          this.message1 = "U heeft nog geen notities om weer te geven.";
-        }
-        else{
-          //this.categoryListEmpty = false;
-          this.message1 = "";
-        }
+         //notesOfUser is de lijst met alle notities van de gebruiker
+         this.notesOfUser = data;
+         //notes is de lijst met weer te geven notities
+         this.notes=data;
+         if(data.length == 0) {
+           this.message1 = "U heeft nog geen notities om weer te geven.";
+         }
+         else{
+           //this.categoryListEmpty = false;
+           this.message1 = "";
+         }
+       })
       })
-    })
-  }
+   }
   
   //velden voor de nieuwe account weergeven
   addUserShowInputField(){
@@ -169,7 +157,7 @@ export class HomeComponent implements OnInit {
     this.message4 = "In welke kleur wilt u de categorie weergeven";
     this.message5 = "Vul hier uw notitie in";
     this.message6 = "Kies uw notitiecategorie";
-    this.loginUserName = "Emiel";
+    this.loginUserName = "";
     this.activeUser = null;
     //userExists is false wanneer loginUserName niet gekend is
     this.userExists = false;
@@ -226,7 +214,11 @@ export class HomeComponent implements OnInit {
     }
     this.apiService.addCategoryForUser(this.activeUser.id, this.categoryDescriptionNew,this.categoryColor).subscribe((data) => {
       console.log(data);
-      this.apiService.getCategoriesOfUser(this.activeUser.id).subscribe((data: Category[]) => {
+      if(data == "Description already exists") {
+        this.message3="deze categorie bestaat al, gelieve een andere beschijving op te geven";
+        return;
+      }
+      this.apiService.getCategoriesOfUser(this.activeUser.id).subscribe((data: Categorie[]) => {
         console.log(data);
         this.categoriesOfUser = data;
         //als alles goed ging is de lijst nu niet meer leeg
@@ -272,7 +264,7 @@ export class HomeComponent implements OnInit {
       console.log(data);
       this.selectedNotesCategory = -1;
       this.noteContent = "";
-      this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Note[]) => {
+      this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Notitie[]) => {
         console.log(data);
         //notesOfUser is de lijst met alle notities van de gebruiker
         this.notesOfUser = data;
@@ -297,8 +289,8 @@ export class HomeComponent implements OnInit {
     }
     onNoteClick(note) {
       this.selectedNote = note;
-      this.noteContent = this.selectedNote.content
-      this.selectedNotesCategory = this.selectedNote.categoryId
+      this.noteContent = note.content;
+      this.selectedNotesCategory = note.categoryId;
     }
     changeNote(){      
       if(this.selectedNotesCategory == -1) {
@@ -313,7 +305,7 @@ export class HomeComponent implements OnInit {
         console.log(data);
         this.selectedNotesCategory = -1;
         this.noteContent = "";
-        this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Note[]) => {
+        this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Notitie[]) => {
           console.log(data);
           //notesOfUser is de lijst met alle notities van de gebruiker
           this.notesOfUser = data;
@@ -330,11 +322,10 @@ export class HomeComponent implements OnInit {
         })
       })
     }
-
     deleteNote(){
       this.apiService.delNoteOfUser(this.selectedNote.id).subscribe((data) => {
         console.log(data);
-        this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Note[]) => {
+        this.apiService.getNotesOfUser(this.activeUser.id).subscribe((data: Notitie[]) => {
           console.log(data);
           //notesOfUser is de lijst met alle notities van de gebruiker
           this.notesOfUser = data;
@@ -398,22 +389,28 @@ export class HomeComponent implements OnInit {
 
   //voor een eventuele administrator
   //gebruikers
+  allUsers: Gebruiker[] = [];
   getUsers() {
-     this.apiService.getUsers().subscribe((data: User[]) => {
+     this.apiService.getUsers().subscribe((data: Gebruiker[]) => {
        console.log(data);
+       this.allUsers=data;
      })
    }
 
   //categoriën
+  allCategories: Categorie[] = [];
   getCategories() {
-    this.apiService.getCategories().subscribe((data: Category[]) => {
+    this.apiService.getCategories().subscribe((data: Categorie[]) => {
       console.log(data);
+      this.allCategories=data;
      })
     }
   //notities
+  allNotes: Notitie[] = [];
   getNotes() {
-    this.apiService.getNotes().subscribe((data: Note[]) => {
+    this.apiService.getNotes().subscribe((data: Notitie[]) => {
       console.log(data);
+      this.allNotes =data;
     })
   }
 }

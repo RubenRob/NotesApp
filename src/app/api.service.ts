@@ -12,7 +12,6 @@ export class APIService {
   constructor(private http: HttpClient) { 
     this.route = 'https://jensjorisdecorte-backend-example-4.glitch.me'
   }
-
   //
   //bewerkingen op "/users"
   //
